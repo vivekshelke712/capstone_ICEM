@@ -25,6 +25,7 @@ import UserLogin from './pages/userPages/UserLogin'
 import OrganizationProtected from './share/OrganizationProtected'
 import OrganizationNavbar from './Component/organizationComponent/OrganizationNavbar'
 import OrganizationDashboard from './pages/OrganizationPages/OrgDashboard'
+import OrganizationRegistration from './pages/OrganizationPages/OrganizationRegistration'
 const App = () => {
   return <>
     <div><Toaster
@@ -41,6 +42,7 @@ const App = () => {
             <Route path='/test' element={<Test />} />
           <Route path='/userLogin' element={<UserLogin />} />
           <Route path='/userRegister' element={<UserRegistration />} />
+          <Route path='/orgRegister' element={<OrganizationRegistration />} />
              {/* <Route path='/jobDetails/:jobId' element={<JobDetails />} /> */}
             <Route path='/help' element={<Help/>} />
             <Route path='/contactus' element={<ContactUs />} />

@@ -1,32 +1,70 @@
-const expressAsyncHandler = require('express-async-handler');
-const Organization = require('../models/Organization');
-const user = require('../models/user');
+const asyncHandler = require("express-async-handler");
+const bcrypt = require("bcryptjs");
+const validator = require("validator");
+const Organization = require("../models/Organization");
 
+exports.organizationRegister = asyncHandler(async (req, res) => {
+  const {
+    name,
+    email,
+    password,
+    role,
+    number,
+    orgName,
+    orgType,
+    orgService,
+    registrationNumber,
+    contactPerson,
+    contactInfo,
+    address,
+    city,
+    description,
+  } = req.body;
 
-// Create Organization without referencing the user table
-exports.createOrganization = expressAsyncHandler(async (req, res) => {
-  const { userId } = req.params;
-  const { name, address, website, contactPerson, phone, description } = req.body;
-
-  // Check if the user exists and if their role is 'organization'
-  const user = await user.findById(userId);
-  if (!user || user.role !== 'organization') {
-    res.status(400);
-    throw new Error('User not found or not authorized');
+  // Input validation
+  if (!name || !email || !password || !number || !orgName || !orgType || !orgService || !registrationNumber || !contactPerson || !contactInfo || !address || !city) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+  if (!validator.isEmail(email)) {
+    return res.status(400).json({ message: "Please provide a valid email" });
+  }
+  if (!validator.isStrongPassword(password)) {
+    return res.status(400).json({ message: "Please enter a strong password (at least 6 characters, one uppercase letter, one symbol)" });
+  }
+  if (!validator.isMobilePhone(number, "en-IN")) {
+    return res.status(400).json({ message: "Please enter a valid 10-digit phone number" });
+  }
+  if (role && !["organization", "admin", "volunteer"].includes(role)) {
+    return res.status(400).json({ message: "Role must be one of: 'organization', 'admin', or 'volunteer'" });
   }
 
-  // Create a new organization without referencing the user
-  const newOrganization = new Organization({
+  // Check if the email is already registered
+  const existingOrganization = await Organization.findOne({ email });
+  if (existingOrganization) {
+    return res.status(400).json({ message: "Organization already exists with this email" });
+  }
+
+  // Hash the password
+  const hashPass = await bcrypt.hash(password, 10);
+
+  // Create a new organization
+  const organization = await Organization.create({
     name,
-    address,
-    website,
+    email,
+    password: hashPass,
+    role: role || "organization", // Default to 'organization' if not provided
+    number,
+    orgName,
+    orgType,
+    orgService,
+    registrationNumber,
     contactPerson,
-    phone,
+    contactInfo,
+    address,
+    city,
     description,
-    isActive:true
   });
 
-  await newOrganization.save();
-
-  res.status(201).json({ message: 'Organization created successfully' });
+  // Respond with success message
+  res.status(201).json({ message: "Organization registered successfully", data: organization });
 });

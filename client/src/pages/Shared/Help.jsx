@@ -1,128 +1,238 @@
 import React, { useState, useEffect } from 'react';
-import L from 'leaflet';
-import { ToastContainer, toast } from 'react-toastify';
-import 'leaflet/dist/leaflet.css';
-import 'react-toastify/dist/ReactToastify.css';
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import axios from 'axios';
+import Navbar from '../../Component/Navbar';
+import Footer from '../../Component/Footer';
 
 const Help = () => {
-  // State for form fields
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [lat, setLat] = useState(null);
-  const [lng, setLng] = useState(null);
-  const [locationFetched, setLocationFetched] = useState(false);
-  const [map, setMap] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    age: '',
+    needType: '',
+    contact: '',
+    description: '',
+  });
+  const [city, setCity] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState({
+    latitude: null,
+    longitude: null,
+  });
 
-  // Fetch user's current location using geolocation API
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLat(position.coords.latitude);
-          setLng(position.coords.longitude);
-          setLocationFetched(true);
-        },
-        (error) => {
-          console.error(error);
-          toast.error('Unable to fetch your location!');
-        }
-      );
-    } else {
-      toast.error('Geolocation is not supported by your browser!');
-    }
-  }, []);
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: `${import.meta.env.VITE_GOOGLE_MAPS_API}`, // Replace with your Google Maps API key
+  });
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!name || !description || !lat || !lng) {
-      toast.error('Please provide all the details including location!');
-      return;
-    }
-
-    const helpRequest = {
-      name,
-      description,
-      location: { lat, lng },
-    };
-
-    // Initialize or update the map
-    if (map) {
-      map.remove();
-    }
-
-    const newMap = L.map('map').setView([lat, lng], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(newMap);
-    L.marker([lat, lng])
-      .addTo(newMap)
-      .bindPopup('Help Needed Here!')
-      .openPopup();
-
-    setMap(newMap);
-    setName('');
-    setDescription('');
-    toast.success('Help request submitted successfully!');
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(formData, currentLocation);
+    alert('Details of the needy individual have been submitted!');
+    setFormData({
+      name: '',
+      age: '',
+      needType: '',
+      contact: '',
+      description: '',
+    });
+  };
+
+  useEffect(() => {
+    // Get current location
+    const fetchCurrentLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setCurrentLocation({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            });
+          },
+          (error) => {
+            console.error('Error fetching current location:', error);
+          }
+        );
+      } else {
+        console.error('Geolocation is not supported by this browser.');
+      }
+    };
+
+    fetchCurrentLocation();
+  }, []);
+
+  useEffect(() => {
+    // Fetch city name using Google Geocoding API
+    const fetchCity = async () => {
+      if (currentLocation.latitude && currentLocation.longitude) {
+        try {
+          const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/geocode/json`,
+            {
+              params: {
+                latlng: `${currentLocation.latitude},${currentLocation.longitude}`,
+                key: `${import.meta.env.VITE_GOOGLE_MAPS_API}`, // Replace with your Google Maps API key
+              },
+            }
+          );
+          const results = response.data.results;
+          if (results.length > 0) {
+            const cityResult = results[0].address_components.find((comp) =>
+              comp.types.includes('locality')
+            );
+            setCity(cityResult ? cityResult.long_name : 'City not found');
+          }
+        } catch (error) {
+          console.error('Error fetching city name:', error);
+        }
+      }
+    };
+
+    fetchCity();
+  }, [currentLocation]);
+
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">Help the Needy</h1>
+    <>
+      <Navbar />
+      <div className="bg-gray-50">
+        {/* Header Section */}
+        <section className="text-center py-16 bg-purple-600 text-white">
+          <h1 className="text-4xl font-bold">Help the Needy</h1>
+          <p className="text-lg mt-4">Please provide details of the needy individual to offer assistance.</p>
+        </section>
 
-      {/* Help Form */}
-      <form onSubmit={handleSubmit} className="w-full max-w-lg bg-white p-8 rounded-lg shadow-lg space-y-4">
-        <div className="flex flex-col">
-          <label htmlFor="name" className="text-lg font-semibold text-gray-700 mb-2">Name of Needy Person</label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div className="flex flex-col">
-          <label htmlFor="description" className="text-lg font-semibold text-gray-700 mb-2">Description of Help Needed</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            rows="4"
-          />
-        </div>
+        {/* Help Form Section */}
+        <section className="max-w-4xl mx-auto py-16 px-4">
+          <h2 className="text-3xl font-semibold text-center">Submit Needy Individual's Details</h2>
+          <p className="text-lg mt-4 text-center text-gray-700">
+            Fill in the form below to help us connect with organizations or volunteers who can assist.
+          </p>
 
-        {/* Location Section */}
-        <div className="flex flex-col">
-          <label htmlFor="location" className="text-lg font-semibold text-gray-700 mb-2">Location</label>
-          {locationFetched ? (
-            <p className="text-gray-600">Latitude: {lat}, Longitude: {lng}</p>
+          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+            <div className="flex flex-col">
+              <label htmlFor="name" className="text-lg font-medium text-gray-700">Needy Individual's Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="mt-2 px-4 py-2 border border-gray-300 rounded-md"
+                placeholder="Enter the name"
+                required
+              />
+            </div>
+
+            <div className="flex flex-col mt-4">
+              <label htmlFor="age" className="text-lg font-medium text-gray-700">Age</label>
+              <input
+                type="number"
+                id="age"
+                name="age"
+                value={formData.age}
+                onChange={handleChange}
+                className="mt-2 px-4 py-2 border border-gray-300 rounded-md"
+                placeholder="Enter age"
+                required
+              />
+            </div>
+
+            <div className="flex flex-col mt-4">
+              <label htmlFor="needType" className="text-lg font-medium text-gray-700">Type of Need</label>
+              <select
+                id="needType"
+                name="needType"
+                value={formData.needType}
+                onChange={handleChange}
+                className="mt-2 px-4 py-2 border border-gray-300 rounded-md"
+                required
+              >
+                <option value="">Select Need Type</option>
+                <option value="food">Food</option>
+                <option value="shelter">Shelter</option>
+                <option value="medical">Medical Assistance</option>
+                <option value="clothing">Clothing</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div className="flex flex-col mt-4">
+              <label htmlFor="contact" className="text-lg font-medium text-gray-700">Contact Information</label>
+              <input
+                type="text"
+                id="contact"
+                name="contact"
+                value={formData.contact}
+                onChange={handleChange}
+                className="mt-2 px-4 py-2 border border-gray-300 rounded-md"
+                placeholder="Enter contact number or email"
+                required
+              />
+            </div>
+
+            <div className="flex flex-col mt-4">
+              <label htmlFor="description" className="text-lg font-medium text-gray-700">Brief Description of the Need</label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="mt-2 px-4 py-2 border border-gray-300 rounded-md"
+                rows="4"
+                placeholder="Provide more details about the need"
+                required
+              />
+            </div>
+
+            <div className="mt-6">
+              <button
+                type="submit"
+                className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
+              >
+                Submit Details
+              </button>
+            </div>
+          </form>
+        </section>
+
+        {/* Google Map Section */}
+        <section className="max-w-4xl mx-auto py-16 px-4">
+          <h2 className="text-3xl font-semibold text-center">Location</h2>
+          {isLoaded ? (
+            <GoogleMap
+              center={{
+                lat: currentLocation.latitude || 0,
+                lng: currentLocation.longitude || 0,
+              }}
+              zoom={13}
+              mapContainerStyle={{ height: '400px', width: '100%' }}
+            >
+              {currentLocation.latitude && currentLocation.longitude && (
+                <Marker
+                  position={{
+                    lat: currentLocation.latitude,
+                    lng: currentLocation.longitude,
+                  }}
+                />
+              )}
+            </GoogleMap>
           ) : (
-            <p className="text-gray-600">Fetching your location...</p>
+            <p>Loading Map...</p>
           )}
-        </div>
+          {city && <p className="text-center mt-4">City: {city}</p>}
+        </section>
 
-        <button
-          type="submit"
-          className="w-full py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-300"
-        >
-          Submit Help Request
-        </button>
-      </form>
-
-      {/* Displaying the Map */}
-      {lat && lng && (
-        <div className="mt-8 w-full max-w-lg bg-white p-4 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold text-center mb-4">Help Location on Map</h2>
-          <div id="map" style={{ height: '400px', width: '100%' }}></div>
-        </div>
-      )}
-
-      {/* Toast Notification Container */}
-      <ToastContainer />
-    </div>
+        {/* Footer Section */}
+        <footer className="bg-purple-600 py-6 text-white text-center">
+          <p>&copy; 2024 AidBridge. All rights reserved.</p>
+        </footer>
+      </div>
+      <Footer />
+    </>
   );
 };
 
