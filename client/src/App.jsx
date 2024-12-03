@@ -57,7 +57,7 @@ const App = () => {
         </Route>
 
         {/* Teacher Routes */}
-           <Route path='/organization' element={<> <OrganizationProtected compo={<><OrganizationNavbar /> <Outlet /> <Footer /></>} /></>}>
+           <Route path='/org-Dash' element={<> <OrganizationProtected compo={<><OrganizationNavbar /> <Outlet /> <Footer /></>} /></>}>
           <Route index element={< OrganizationDashboard/>} />
         </Route>
 

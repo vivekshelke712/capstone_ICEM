@@ -1,153 +1,129 @@
-import React, { useState } from 'react';
-import Navbar from '../../Component/Navbar';
-import Footer from '../../Component/Footer';
+import React, { useState, useEffect } from 'react';
+import L from 'leaflet';
+import { ToastContainer, toast } from 'react-toastify';
+import 'leaflet/dist/leaflet.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Help = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    age: '',
-    needType: '',
-    contact: '',
-    description: '',
-  });
+  // State for form fields
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [lat, setLat] = useState(null);
+  const [lng, setLng] = useState(null);
+  const [locationFetched, setLocationFetched] = useState(false);
+  const [map, setMap] = useState(null);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  // Fetch user's current location using geolocation API
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLat(position.coords.latitude);
+          setLng(position.coords.longitude);
+          setLocationFetched(true);
+        },
+        (error) => {
+          console.error(error);
+          toast.error('Unable to fetch your location!');
+        }
+      );
+    } else {
+      toast.error('Geolocation is not supported by your browser!');
+    }
+  }, []);
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-  
-    console.log(formData);
-    alert('Details of the needy individual have been submitted!');
-    setFormData({
-      name: '',
-      age: '',
-      needType: '',
-      contact: '',
-      description: '',
-    });
+
+    if (!name || !description || !lat || !lng) {
+      toast.error('Please provide all the details including location!');
+      return;
+    }
+
+    const helpRequest = {
+      name,
+      description,
+      location: { lat, lng },
+    };
+
+    // Initialize or update the map
+    if (map) {
+      map.remove();
+    }
+
+    const newMap = L.map('map').setView([lat, lng], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(newMap);
+    L.marker([lat, lng])
+      .addTo(newMap)
+      .bindPopup('Help Needed Here!')
+      .openPopup();
+
+    setMap(newMap);
+    setName('');
+    setDescription('');
+    toast.success('Help request submitted successfully!');
   };
 
-  return <>
-    <Navbar />
-    <div className="bg-gray-50">
-      {/* Header Section */}
-      <section className="text-center py-16 bg-purple-600 text-white">
-        <h1 className="text-4xl font-bold">Help the Needy</h1>
-        <p className="text-lg mt-4">Please provide details of the needy individual to offer assistance.</p>
-      </section>
+  return (
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
+      <h1 className="text-3xl font-bold text-center mb-6">Help the Needy</h1>
 
-      {/* Help Form Section */}
-      <section className="max-w-4xl mx-auto py-16 px-4">
-        <h2 className="text-3xl font-semibold text-center">Submit Needy Individual's Details</h2>
-        <p className="text-lg mt-4 text-center text-gray-700">
-          Fill in the form below to help us connect with organizations or volunteers who can assist.
-        </p>
+      {/* Help Form */}
+      <form onSubmit={handleSubmit} className="w-full max-w-lg bg-white p-8 rounded-lg shadow-lg space-y-4">
+        <div className="flex flex-col">
+          <label htmlFor="name" className="text-lg font-semibold text-gray-700 mb-2">Name of Needy Person</label>
+          <input
+            type="text"
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="description" className="text-lg font-semibold text-gray-700 mb-2">Description of Help Needed</label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows="4"
+          />
+        </div>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          {/* Name Field */}
-          <div className="flex flex-col">
-            <label htmlFor="name" className="text-lg font-medium text-gray-700">Needy Individual's Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="mt-2 px-4 py-2 border border-gray-300 rounded-md"
-              placeholder="Enter the name"
-              required
-            />
-          </div>
+        {/* Location Section */}
+        <div className="flex flex-col">
+          <label htmlFor="location" className="text-lg font-semibold text-gray-700 mb-2">Location</label>
+          {locationFetched ? (
+            <p className="text-gray-600">Latitude: {lat}, Longitude: {lng}</p>
+          ) : (
+            <p className="text-gray-600">Fetching your location...</p>
+          )}
+        </div>
 
-          {/* Age Field */}
-          <div className="flex flex-col mt-4">
-            <label htmlFor="age" className="text-lg font-medium text-gray-700">Age</label>
-            <input
-              type="number"
-              id="age"
-              name="age"
-              value={formData.age}
-              onChange={handleChange}
-              className="mt-2 px-4 py-2 border border-gray-300 rounded-md"
-              placeholder="Enter age"
-              required
-            />
-          </div>
+        <button
+          type="submit"
+          className="w-full py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-300"
+        >
+          Submit Help Request
+        </button>
+      </form>
 
-          {/* Need Type Field */}
-          <div className="flex flex-col mt-4">
-            <label htmlFor="needType" className="text-lg font-medium text-gray-700">Type of Need</label>
-            <select
-              id="needType"
-              name="needType"
-              value={formData.needType}
-              onChange={handleChange}
-              className="mt-2 px-4 py-2 border border-gray-300 rounded-md"
-              required
-            >
-              <option value="">Select Need Type</option>
-              <option value="food">Food</option>
-              <option value="shelter">Shelter</option>
-              <option value="medical">Medical Assistance</option>
-              <option value="clothing">Clothing</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
+      {/* Displaying the Map */}
+      {lat && lng && (
+        <div className="mt-8 w-full max-w-lg bg-white p-4 rounded-lg shadow-lg">
+          <h2 className="text-xl font-semibold text-center mb-4">Help Location on Map</h2>
+          <div id="map" style={{ height: '400px', width: '100%' }}></div>
+        </div>
+      )}
 
-          {/* Contact Field */}
-          <div className="flex flex-col mt-4">
-            <label htmlFor="contact" className="text-lg font-medium text-gray-700">Contact Information</label>
-            <input
-              type="text"
-              id="contact"
-              name="contact"
-              value={formData.contact}
-              onChange={handleChange}
-              className="mt-2 px-4 py-2 border border-gray-300 rounded-md"
-              placeholder="Enter contact number or email"
-              required
-            />
-          </div>
-
-          {/* Description Field */}
-          <div className="flex flex-col mt-4">
-            <label htmlFor="description" className="text-lg font-medium text-gray-700">Brief Description of the Need</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="mt-2 px-4 py-2 border border-gray-300 rounded-md"
-              rows="4"
-              placeholder="Provide more details about the need"
-              required
-            />
-          </div>
-
-          {/* Submit Button */}
-          <div className="mt-6">
-            <button
-              type="submit"
-              className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
-            >
-              Submit Details
-            </button>
-          </div>
-        </form>
-      </section>
-
-      {/* Footer Section */}
-      <footer className="bg-purple-600 py-6 text-white text-center">
-        <p>&copy; 2024 AidBridge. All rights reserved.</p>
-      </footer>
+      {/* Toast Notification Container */}
+      <ToastContainer />
     </div>
-    <Footer />
-    </>
+  );
 };
 
 export default Help;

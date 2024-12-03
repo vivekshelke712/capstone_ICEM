@@ -65,8 +65,8 @@ const Navbar = () => {
                       {/* Render different paths based on user's role */}
         {user.role === 'admin' ? (
           <li><Link to='/admin'>View Profile</Link></li>
-        ) : user.role === 'teacher' ? (
-          <li><Link to='/teacher'>View Profile</Link></li>
+        ) : user.role === 'organization' ? (
+          <li><Link to='/org-Dash'>View Profile</Link></li>
         ) : (
           <li><Link to='/user'>View Profile</Link></li>
         )}
