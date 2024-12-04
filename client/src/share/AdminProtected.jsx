@@ -5,7 +5,7 @@ const AdminProtected = ({compo}) => {
     const {user} = useSelector(state => state.user)
     return <>
         {
-            (user && user.role ==="admin") ? compo : <Navigate to='/admin' />
+            (user && user.role ==="admin") ? compo : <Navigate to='/' />
         }
     </>
 }
