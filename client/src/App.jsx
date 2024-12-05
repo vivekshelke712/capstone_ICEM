@@ -26,6 +26,8 @@ import OrganizationProtected from './share/OrganizationProtected'
 import OrganizationNavbar from './Component/organizationComponent/OrganizationNavbar'
 import OrganizationDashboard from './pages/OrganizationPages/OrgDashboard'
 import OrganizationRegistration from './pages/OrganizationPages/OrganizationRegistration'
+import UserDashboard from './pages/userPages/UserDashboard'
+import { ToastContainer } from 'react-toastify'
 const App = () => {
   return <>
     <div><Toaster
@@ -33,6 +35,7 @@ const App = () => {
       reverseOrder={true}
       
 /></div>
+{/* <ToastContainer />   */}
     <BrowserRouter>
      
       <Routes>
@@ -54,17 +57,17 @@ const App = () => {
               
           
           
-        <Route path='/user' element={<> <UserProtected compo={<><UserNavbar /> <Outlet /> <Footer /></>} /></>}>
-          {/* <Route index element={<UserDashboard />} /> */}
+        <Route path='/user' element={<> <UserProtected compo={<><Navbar /> <Outlet /> <Footer /></>} /></>}>
+          <Route index element={<UserDashboard />} />
         </Route>
 
         {/* Teacher Routes */}
-           <Route path='/org-Dash' element={<> <OrganizationProtected compo={<><OrganizationNavbar /> <Outlet /> <Footer /></>} /></>}>
+           <Route path='/org-Dash' element={<> <OrganizationProtected compo={<><Navbar /> <Outlet /> <Footer /></>} /></>}>
           <Route index element={< OrganizationDashboard/>} />
         </Route>
 
         {/* Admin Routes */}
-<Route path="/admin" element={<AdminProtected compo={<><AdminNavbar /><Outlet /><Footer /></>} />}>
+<Route path="/admin" element={<AdminProtected compo={<><Navbar /><Outlet /><Footer /></>} />}>
   <Route index element={<AdminDashboard />} />
   
   {/* Add the route for application detailing here */}
