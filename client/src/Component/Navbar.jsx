@@ -29,23 +29,23 @@ const Navbar = () => {
         return (
           <>
              <li>
-            <Link to="/admin-dashboard" className="hover:text-indigo-300">
+            <Link to="/admin" className="hover:text-indigo-300">
               Dashboard
             </Link>
           </li>
           <li>
-            <Link to="/manage-users" className="hover:text-indigo-300">
+            <Link to="manage-users" className="hover:text-indigo-300">
               Manage Users
             </Link>
           </li>
           <li>
-            <Link to="/manage-reports" className="hover:text-indigo-300">
+            <Link to="manage-reports" className="hover:text-indigo-300">
               Manage Reports
             </Link>
           </li>
           <li>
-            <Link to="/settings" className="hover:text-indigo-300">
-              Settings
+            <Link to="ManageOrganizations" className="hover:text-indigo-300">
+              ManageOrganizations
             </Link>
             </li>
           </>
