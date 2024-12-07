@@ -28,6 +28,9 @@ import OrganizationDashboard from './pages/OrganizationPages/OrgDashboard'
 import OrganizationRegistration from './pages/OrganizationPages/OrganizationRegistration'
 import UserDashboard from './pages/userPages/UserDashboard'
 import { ToastContainer } from 'react-toastify'
+import OrgProjects from './pages/OrganizationPages/OrgProjects'
+import ManageService from './pages/OrganizationPages/ManageService'
+import Reports from './pages/OrganizationPages/Reports'
 const App = () => {
   return <>
     <div><Toaster
@@ -64,6 +67,9 @@ const App = () => {
         {/* Teacher Routes */}
            <Route path='/org-Dash' element={<> <OrganizationProtected compo={<><Navbar /> <Outlet /> <Footer /></>} /></>}>
           <Route index element={< OrganizationDashboard/>} />
+          <Route path='/org-Dash/projects' element={< OrgProjects/>} />
+          <Route path='/org-Dash/ManageService' element={< ManageService/>} />
+          <Route path='/org-Dash/reports' element={< Reports/>} />
         </Route>
 
         {/* Admin Routes */}

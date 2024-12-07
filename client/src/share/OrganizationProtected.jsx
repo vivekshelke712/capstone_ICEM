@@ -5,7 +5,7 @@ const OrganizationProtected = ({compo}) => {
     const {user} = useSelector(state => state.user)
     return <>
         {
-            (user && user.role ==="organization") ? compo : <Navigate to='/organization' />
+            (user && user.role ==="organization") ? compo : <Navigate to='/' />
         }
     </>
 }

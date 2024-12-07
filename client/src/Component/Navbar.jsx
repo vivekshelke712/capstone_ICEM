@@ -28,11 +28,25 @@ const Navbar = () => {
       case 'admin':
         return (
           <>
-            <li>
-              <Link to="/admin">Admin Dashboard</Link>
-            </li>
-            <li>
-              <Link to="/manage-users">Manage Users</Link>
+             <li>
+            <Link to="/admin-dashboard" className="hover:text-indigo-300">
+              Dashboard
+            </Link>
+          </li>
+          <li>
+            <Link to="/manage-users" className="hover:text-indigo-300">
+              Manage Users
+            </Link>
+          </li>
+          <li>
+            <Link to="/manage-reports" className="hover:text-indigo-300">
+              Manage Reports
+            </Link>
+          </li>
+          <li>
+            <Link to="/settings" className="hover:text-indigo-300">
+              Settings
+            </Link>
             </li>
           </>
         );
@@ -40,17 +54,26 @@ const Navbar = () => {
         return (
           <>
             <li>
-              <Link to="/org-Dash">Organization Dashboard</Link>
-            </li>
-            <li>
-              <Link to="/org-Dash">Organization Dashboard</Link>
-            </li>
-            <li>
-              <Link to="/org-Dash">Organization Dashboard</Link>
-            </li>
-            <li>
-              <Link to="/projects">Manage Projects</Link>
-            </li>
+            <Link to="/org-Dash" className="hover:text-gray-200">
+              Organization Dashboard
+            </Link>
+          </li>
+          
+          <li>
+            <Link to="projects" className="hover:text-gray-200">
+              Manage Projects
+            </Link>
+          </li>
+          <li>
+            <Link to="ManageService" className="hover:text-gray-200">
+              Manage Services
+            </Link>
+          </li>
+          <li>
+            <Link to="reports" className="hover:text-gray-200">
+              Reports & Analytics
+            </Link>
+          </li>
           </>
         );
       case 'user':
