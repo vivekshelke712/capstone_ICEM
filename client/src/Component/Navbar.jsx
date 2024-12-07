@@ -43,6 +43,12 @@ const Navbar = () => {
               <Link to="/org-Dash">Organization Dashboard</Link>
             </li>
             <li>
+              <Link to="/org-Dash">Organization Dashboard</Link>
+            </li>
+            <li>
+              <Link to="/org-Dash">Organization Dashboard</Link>
+            </li>
+            <li>
               <Link to="/projects">Manage Projects</Link>
             </li>
           </>
