@@ -1,8 +1,8 @@
-const { organizationRegister } = require('../controllers/organizationController');
+const express = require("express");
+const { getOrganizationByEmail } = require("../controllers/organizationController");
+const router = express.Router();
 
-const router = require('express').Router();
-
-// Register route for organizations
-router.post("/orgRegister", organizationRegister);
+// Route to get an organization by email
+router.get("/organization/:email", getOrganizationByEmail);
 
 module.exports = router;

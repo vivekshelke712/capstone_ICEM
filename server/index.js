@@ -21,7 +21,7 @@ app.use(cors({
 
 // Routes
 app.use('/api/v1/auth',require('./routes/authroute'))
-app.use('/api/v1/orgauth',require('./routes/organizationRoute'))
+app.use('/api/v1/org',require('./routes/organizationRoute'))
 // app.use('/api/v1/admin',require('./routes/adminRoute'))
 // app.use('/api/v1/user',require('./routes/userRoute'))
 // 404

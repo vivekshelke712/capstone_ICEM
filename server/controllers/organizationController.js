@@ -1,70 +1,23 @@
 const asyncHandler = require("express-async-handler");
-const bcrypt = require("bcryptjs");
-const validator = require("validator");
-const Organization = require("../models/Organization");
+const User = require("../models/user");
 
-exports.organizationRegister = asyncHandler(async (req, res) => {
-  const {
-    name,
-    email,
-    password,
-    role,
-    number,
-    orgName,
-    orgType,
-    orgService,
-    registrationNumber,
-    contactPerson,
-    contactInfo,
-    address,
-    city,
-    description,
-  } = req.body;
+// Controller to get a specific organization by email
+exports.getOrganizationByEmail = asyncHandler(async (req, res) => {
+  const { email } = req.params; // Get email from route parameters
+  
+  try {
+    // Fetch the user with role 'organization' and the specified email
+    const organization = await User.findOne({ email, role: "organization" });
 
-  // Input validation
-  if (!name || !email || !password || !number || !orgName || !orgType || !orgService || !registrationNumber || !contactPerson || !contactInfo || !address || !city) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-  if (!validator.isEmail(email)) {
-    return res.status(400).json({ message: "Please provide a valid email" });
-  }
-  if (!validator.isStrongPassword(password)) {
-    return res.status(400).json({ message: "Please enter a strong password (at least 6 characters, one uppercase letter, one symbol)" });
-  }
-  if (!validator.isMobilePhone(number, "en-IN")) {
-    return res.status(400).json({ message: "Please enter a valid 10-digit phone number" });
-  }
-  if (role && !["organization", "admin", "volunteer"].includes(role)) {
-    return res.status(400).json({ message: "Role must be one of: 'organization', 'admin', or 'volunteer'" });
-  }
+    if (!organization) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
 
-  // Check if the email is already registered
-  const existingOrganization = await Organization.findOne({ email });
-  if (existingOrganization) {
-    return res.status(400).json({ message: "Organization already exists with this email" });
+    res.status(200).json({
+      message: "Organization fetched successfully",
+      data: organization,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
   }
-
-  // Hash the password
-  const hashPass = await bcrypt.hash(password, 10);
-
-  // Create a new organization
-  const organization = await Organization.create({
-    name,
-    email,
-    password: hashPass,
-    role: role || "organization", // Default to 'organization' if not provided
-    number,
-    orgName,
-    orgType,
-    orgService,
-    registrationNumber,
-    contactPerson,
-    contactInfo,
-    address,
-    city,
-    description,
-  });
-
-  // Respond with success message
-  res.status(201).json({ message: "Organization registered successfully", data: organization });
 });
