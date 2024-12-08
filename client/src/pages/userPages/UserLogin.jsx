@@ -14,7 +14,6 @@ const UserLogin = () => {
   const [loginData, setLoginData] = useState({
     email: '',
     password: '',
-    // role: '',
   });
 
   const handleChange = (e) => {

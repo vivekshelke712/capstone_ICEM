@@ -21,13 +21,13 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["user", "organization"], // Can be either "user" or "organization"
+      enum: ["user", "organization"], 
       required: true,
     },
     orgName: {
       type: String,
       required: function () {
-        return this.role === "organization"; // Only required for organizations
+        return this.role === "organization"; 
       },
     },
     orgType: {
