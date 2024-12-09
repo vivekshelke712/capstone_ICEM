@@ -7,9 +7,12 @@ exports.getAllOrganizations = AsyncHandler(async(req,res)=> {
 } )
 exports.getOrganizationsByCity = AsyncHandler(async (req, res) => {
     const { city } = req.params; // Extract city from request parameters
+    console.log("City received from params:", city); // Debug log
 
     // Query organizations by city
     const organizations = await Organization.find({ city });
+
+    console.log("Organizations fetched:", organizations); // Debug log
 
     if (organizations.length === 0) {
         return res.status(404).json({ message: "No organizations found in this city." });
@@ -17,6 +20,7 @@ exports.getOrganizationsByCity = AsyncHandler(async (req, res) => {
 
     res.status(200).json({ message: "Organizations fetched successfully", organizations });
 });
+
 
 exports.getAllCities = AsyncHandler(async (req, res) => {
     const cities = await Organization.distinct('city'); // Get unique cities
