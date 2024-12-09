@@ -31,7 +31,7 @@ const About = () => {
       ];
     return <>
         {/* <Navbar /> */}
-        <Navbar />
+        
         <div className="bg-gray-50 p-8">
       {/* Header Section */}
       <section className="text-center mb-10">
@@ -218,7 +218,7 @@ const About = () => {
       </div>
     </section>
        
-<Footer />
+
 
     </>
 }

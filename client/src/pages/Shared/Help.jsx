@@ -1,53 +1,119 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
-import axios from 'axios';
-import { useSelector } from 'react-redux';  // Import useSelector
-import Navbar from '../../Component/Navbar';
-import Footer from '../../Component/Footer';
+import { useJsApiLoader } from '@react-google-maps/api';
+import { useSelector } from 'react-redux';
+import axios from 'axios'; // Assuming you will use axios for API calls
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 const Help = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    age: '',
-    needType: '',
-    contact: '',
-    description: '',
-  });
-  const [city, setCity] = useState(null);
+  const [availableOrganizations, setAvailableOrganizations] = useState([]);
+  const [city, setCity] = useState('');
   const [currentLocation, setCurrentLocation] = useState({
     latitude: null,
     longitude: null,
   });
 
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: `${import.meta.env.VITE_GOOGLE_MAPS_API}`, // Replace with your Google Maps API key
+    googleMapsApiKey: `${import.meta.env.VITE_GOOGLE_MAPS_API}`,
   });
 
-  // Access user role from the Redux store
   const user = useSelector((state) => state.user);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const staticCityData = {
+    Pune: [
+      'Food Bank Pune',
+      'Shelter Home Pune',
+      'Medical Aid Pune',
+      'Education for All Pune',
+      'Women Empowerment Pune',
+    ],
+    Mumbai: [
+      'Mumbai Food Aid',
+      'Mumbai Shelter',
+      'Medical Aid Mumbai',
+      'Children’s Education Mumbai',
+      'Youth Empowerment Mumbai',
+    ],
+    Delhi: [
+      'Delhi Food Assistance',
+      'Shelter Homes Delhi',
+      'Medical Support Delhi',
+      'Women’s Empowerment Delhi',
+      'Education for All Delhi',
+    ],
+    Bangalore: [
+      'Bangalore Aid Foundation',
+      'Bangalore Shelter Network',
+      'Health for Bangalore',
+      'Education Bangalore',
+      'Empower Bangalore Women',
+    ],
+    Chennai: [
+      'Chennai Food Bank',
+      'Chennai Shelter Home',
+      'Medical Help Chennai',
+      'Chennai Women Empowerment',
+      'Chennai Educational Support',
+    ],
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData, currentLocation);
-    alert('Details of the needy individual have been submitted!');
-    setFormData({
+  const formik = useFormik({
+    initialValues: {
       name: '',
       age: '',
       needType: '',
       contact: '',
       description: '',
-    });
+      city: '',
+      organization: '',
+      email: user.email,
+      isApproved: false
+    },
+    validationSchema: Yup.object({
+      name: Yup.string().required('Name is required'),
+      age: Yup.number()
+        .required('Age is required --- if you Dont add a Guess Value')
+        .min(1, 'Age must be at least 1')
+        .max(100, 'Age must be below 100'),
+      needType: Yup.string().required('Need Type is required'),
+      contact: Yup.string().required('Contact number is required'),
+      description: Yup.string().required('Description is required'),
+      city: Yup.string().required('City is required'),
+      organization: Yup.string().required('Organization is required'),
+      // email: Yup.string().email('Invalid email format').required('Email is required'),
+    }),
+    onSubmit: async (values) => {
+      // Validate age based on needType
+      if (values.needType === 'AnimalShelter' && values.age >= 14) {
+        formik.setFieldError('age', 'For Animal Shelter, age must be less than 14.');
+        return;
+      }
+      if (values.needType === 'OldAgeHome' && (values.age <= 0 || values.age > 100)) {
+        formik.setFieldError('age', 'For Old Age Home, age must be between 1 and 100.');
+        return;
+      }
+
+      // Assuming you'll use axios to make an API call
+      try {
+        const response = await axios.post('YOUR_API_ENDPOINT', values);
+        console.log(response.data);
+        // Reset the form
+        formik.resetForm();
+      } catch (error) {
+        console.error('Error submitting form data:', error);
+      }
+    },
+  });
+
+  const handleCityChange = (e) => {
+    const selectedCity = e.target.value;
+    setCity(selectedCity);
+    setAvailableOrganizations(staticCityData[selectedCity] || []);
+    formik.setFieldValue('city', selectedCity); // Update city in Formik
   };
 
+  // Get current location
   useEffect(() => {
-    // Get current location
     const fetchCurrentLocation = () => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -61,198 +127,180 @@ const Help = () => {
             console.error('Error fetching current location:', error);
           }
         );
-      } else {
-        console.error('Geolocation is not supported by this browser.');
       }
     };
 
     fetchCurrentLocation();
   }, []);
 
-  useEffect(() => {
-    // Fetch city name using Google Geocoding API
-    const fetchCity = async () => {
-      if (currentLocation.latitude && currentLocation.longitude) {
-        try {
-          const response = await axios.get(
-            `https://maps.googleapis.com/maps/api/geocode/json`,
-            {
-              params: {
-                latlng: `${currentLocation.latitude},${currentLocation.longitude}`,
-                key: `${import.meta.env.VITE_GOOGLE_MAPS_API}`, // Replace with your Google Maps API key
-              },
-            }
-          );
-          const results = response.data.results;
-          if (results.length > 0) {
-            const cityResult = results[0].address_components.find((comp) =>
-              comp.types.includes('locality')
-            );
-            setCity(cityResult ? cityResult.long_name : 'City not found');
-          }
-        } catch (error) {
-          console.error('Error fetching city name:', error);
-        }
-      }
-    };
-
-    fetchCity();
-  }, [currentLocation]);
-
   return (
-    <>
-      <Navbar />
-      <div className="bg-gray-50">
-        {/* Header Section */}
-        <section className="text-center py-16 bg-purple-600 text-white">
-          <h1 className="text-4xl font-bold">Help the Needy</h1>
-          <p className="text-lg mt-4">Please provide details of the needy individual to offer assistance.</p>
-        </section>
+    <div className="container mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-4">Help Request Form</h2>
+      <form onSubmit={formik.handleSubmit} className="space-y-4">
+        {/* Name and Age Fields */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="name" className="block text-sm font-semibold">Name:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            {formik.touched.name && formik.errors.name ? (
+              <div className="text-red-500 text-sm">{formik.errors.name}</div>
+            ) : null}
+          </div>
 
-        {/* Conditional rendering based on user role */}
-        {user?.role === 'user' ? (
-          // If user is logged in and has role 'user', show the form
-          <section className="max-w-4xl mx-auto py-16 px-4">
-            <h2 className="text-3xl font-semibold text-center">Submit Needy Individual's Details</h2>
-            <p className="text-lg mt-4 text-center text-gray-700">
-              Fill in the form below to help us connect with organizations or volunteers who can assist.
-            </p>
-
-            <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-              {/* Form fields for submitting needy details */}
-              <div className="flex flex-col">
-                <label htmlFor="name" className="text-lg font-medium text-gray-700">Needy Individual's Name</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="mt-2 px-4 py-2 border border-gray-300 rounded-md"
-                  placeholder="Enter the name"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col mt-4">
-                <label htmlFor="age" className="text-lg font-medium text-gray-700">Age</label>
-                <input
-                  type="number"
-                  id="age"
-                  name="age"
-                  value={formData.age}
-                  onChange={handleChange}
-                  className="mt-2 px-4 py-2 border border-gray-300 rounded-md"
-                  placeholder="Enter age"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col mt-4">
-                <label htmlFor="needType" className="text-lg font-medium text-gray-700">Type of Need</label>
-                <select
-                  id="needType"
-                  name="needType"
-                  value={formData.needType}
-                  onChange={handleChange}
-                  className="mt-2 px-4 py-2 border border-gray-300 rounded-md"
-                  required
-                >
-                  <option value="">Select Need Type</option>
-                  <option value="food">Food</option>
-                  <option value="shelter">Shelter</option>
-                  <option value="medical">Medical Assistance</option>
-                  <option value="clothing">Clothing</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div className="flex flex-col mt-4">
-                <label htmlFor="contact" className="text-lg font-medium text-gray-700">Contact Information</label>
-                <input
-                  type="text"
-                  id="contact"
-                  name="contact"
-                  value={formData.contact}
-                  onChange={handleChange}
-                  className="mt-2 px-4 py-2 border border-gray-300 rounded-md"
-                  placeholder="Enter contact number or email"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col mt-4">
-                <label htmlFor="description" className="text-lg font-medium text-gray-700">Brief Description of the Need</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  className="mt-2 px-4 py-2 border border-gray-300 rounded-md"
-                  rows="4"
-                  placeholder="Provide more details about the need"
-                  required
-                />
-              </div>
-
-              <div className="mt-6">
-                <button
-                  type="submit"
-                  className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
-                >
-                  Submit Details
-                </button>
-              </div>
-            </form>
-          </section>
-        ) : (
-          // If user is not logged in or doesn't have the required role
-          <section className="max-w-4xl mx-auto py-16 px-4 text-center">
-            <h2 className="text-3xl font-semibold text-center text-gray-700">Log in  to Help the Needy</h2>
-            <p className="text-lg mt-4">Please Log in to provide assistance to needy individuals. Your help is much appreciated!</p>
-            <button
-              onClick={() => window.location.href = '/userLogin'}  // Redirect to signup page
-              className="mt-6 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
+          {/* Need Type Field (Before Age) */}
+          <div>
+            <label htmlFor="needType" className="block text-sm font-semibold">Need Type:</label>
+            <select
+              id="needType"
+              name="needType"
+              value={formik.values.needType}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="w-full p-2 border border-gray-300 rounded"
             >
-              Log In
-            </button>
-          </section>
-        )}
+              <option value="">Select Need Type</option>
+              
+              <option value="AnimalShelter">Animal Shelter</option>
+              <option value="EducationalHelp">Educational Help</option>
+              <option value="OldAgeHome">Old Age Home</option>
+              
+            </select>
+            {formik.touched.needType && formik.errors.needType ? (
+              <div className="text-red-500 text-sm">{formik.errors.needType}</div>
+            ) : null}
+          </div>
 
-        {/* Google Map Section */}
-        <section className="max-w-4xl mx-auto py-16 px-4">
-          <h2 className="text-3xl font-semibold text-center">Location</h2>
-          {isLoaded ? (
-            <GoogleMap
-              center={{
-                lat: currentLocation.latitude || 0,
-                lng: currentLocation.longitude || 0,
+          {/* Age Field */}
+          <div>
+            <label htmlFor="age" className="block text-sm font-semibold">Age:</label>
+            <input
+              type="number"
+              id="age"
+              name="age"
+              value={formik.values.age}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            {formik.touched.age && formik.errors.age ? (
+              <div className="text-red-500 text-sm">{formik.errors.age}</div>
+            ) : null}
+          </div>
+        </div>
+
+        {/* Contact and Description Fields */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="contact" className="block text-sm font-semibold">Contact Number:</label>
+            <input
+              type="text"
+              id="contact"
+              name="contact"
+              value={formik.values.contact}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            {formik.touched.contact && formik.errors.contact ? (
+              <div className="text-red-500 text-sm">{formik.errors.contact}</div>
+            ) : null}
+          </div>
+
+          <div>
+            <label htmlFor="description" className="block text-sm font-semibold">Description:</label>
+            <textarea
+              id="description"
+              name="description"
+              value={formik.values.description}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="w-full p-2 border border-gray-300 rounded"
+              rows="4"
+            />
+            {formik.touched.description && formik.errors.description ? (
+              <div className="text-red-500 text-sm">{formik.errors.description}</div>
+            ) : null}
+          </div>
+        </div>
+
+        {/* City and Organization Fields */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="city" className="block text-sm font-semibold">City:</label>
+            <select
+              id="city"
+              name="city"
+              value={formik.values.city}
+              onChange={(e) => {
+                handleCityChange(e);
+                formik.handleChange(e);
               }}
-              zoom={13}
-              mapContainerStyle={{ height: '400px', width: '100%' }}
+              onBlur={formik.handleBlur}
+              className="w-full p-2 border border-gray-300 rounded"
             >
-              {currentLocation.latitude && currentLocation.longitude && (
-                <Marker
-                  position={{
-                    lat: currentLocation.latitude,
-                    lng: currentLocation.longitude,
-                  }}
-                />
-              )}
-            </GoogleMap>
-          ) : (
-            <p>Loading Map...</p>
-          )}
-          {city && <p className="text-center mt-4">City: {city}</p>}
-        </section>
+              <option value="">Select City</option>
+              <option value="Pune">Pune</option>
+              <option value="Mumbai">Mumbai</option>
+              <option value="Delhi">Delhi</option>
+              <option value="Bangalore">Bangalore</option>
+              <option value="Chennai">Chennai</option>
+            </select>
+            {formik.touched.city && formik.errors.city ? (
+              <div className="text-red-500 text-sm">{formik.errors.city}</div>
+            ) : null}
+          </div>
 
-        {/* Footer Section */}
-        <footer className="bg-purple-600 py-6 text-white text-center">
-          <p>&copy; 2024 AidBridge. All rights reserved.</p>
-        </footer>
-      </div>
-      <Footer />
-    </>
+          <div>
+            <label htmlFor="organization" className="block text-sm font-semibold">Select Organization:</label>
+            <select
+              id="organization"
+              name="organization"
+              value={formik.values.organization}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="w-full p-2 border border-gray-300 rounded"
+            >
+              <option value="">Select Organization</option>
+              {availableOrganizations.map((organization, index) => (
+                <option key={index} value={organization}>{organization}</option>
+              ))}
+            </select>
+            {formik.touched.organization && formik.errors.organization ? (
+              <div className="text-red-500 text-sm">{formik.errors.organization}</div>
+            ) : null}
+          </div>
+        </div>
+
+      
+
+        {/* Submit Button */}
+        <div>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white p-2 rounded"
+          >
+            Submit Request
+          </button>
+        </div>
+      </form>
+
+      {/* Show current location */}
+      {currentLocation.latitude && currentLocation.longitude && (
+        <div className="mt-4">
+          <p>Your Current Location:</p>
+          <p>Latitude: {currentLocation.latitude}</p>
+          <p>Longitude: {currentLocation.longitude}</p>
+        </div>
+      )}
+    </div>
   );
 };
 

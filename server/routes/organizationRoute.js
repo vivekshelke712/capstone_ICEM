@@ -1,8 +1,10 @@
-const express = require("express");
-const { getOrganizationByEmail } = require("../controllers/organizationController");
-const router = express.Router();
+const express = require("express")
+const {getAllOrganizations, getOrganizationsByCity, getAllCities} = require('../controllers/organizationController')
+const router = express.Router()
 
-// Route to get an organization by email
-router.get("/organization/:email", getOrganizationByEmail);
+router.get('/getAllOrganizations',getAllOrganizations)
+router.get('/getOrganizationbyCity/:city', getOrganizationsByCity);
+router.get('/getAllCities', getAllCities);
 
-module.exports = router;
+
+module.exports = router

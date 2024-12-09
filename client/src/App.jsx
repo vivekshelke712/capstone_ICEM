@@ -34,6 +34,7 @@ import Reports from './pages/OrganizationPages/Reports'
 import ManageUsers from './pages/AdminPages/ManageUser'
 import AdminManageReports from './pages/AdminPages/AdminManageReports'
 import OrganizationManagement from './pages/AdminPages/ManageOrgnization'
+import OrganizationLogin from './pages/OrganizationPages/OrganizationLogin'
 const App = () => {
   return <>
     <div><Toaster
@@ -43,7 +44,7 @@ const App = () => {
 /></div>
 {/* <ToastContainer />   */}
     <BrowserRouter>
-     
+     <Navbar />
       <Routes>
         <Route>
         
@@ -52,6 +53,7 @@ const App = () => {
             <Route path='/userLogin' element={<UserLogin />} />
           <Route path='/userRegister' element={<UserRegistration />} />
           <Route path='/orgRegister' element={<OrganizationRegistration />} />
+          <Route path='/orgLogin' element={<OrganizationLogin />} />
              {/* <Route path='/jobDetails/:jobId' element={<JobDetails />} /> */}
             <Route path='/help' element={<Help/>} />
             <Route path='/contactus' element={<ContactUs />} />
@@ -63,12 +65,12 @@ const App = () => {
               
           
           
-        <Route path='/user' element={<> <UserProtected compo={<><Navbar /> <Outlet /> <Footer /></>} /></>}>
+        <Route path='/user' element={<> <UserProtected compo={<><Navbar /> <Outlet /> </>} /></>}>
           <Route index element={<UserDashboard />} />
         </Route>
 
         {/* Teacher Routes */}
-           <Route path='/org-Dash' element={<> <OrganizationProtected compo={<><Navbar /> <Outlet /> <Footer /></>} /></>}>
+           <Route path='/org-Dash' element={<> <OrganizationProtected compo={<> <Outlet /> </>} /></>}>
           <Route index element={< OrganizationDashboard/>} />
           <Route path='/org-Dash/projects' element={< OrgProjects/>} />
           <Route path='/org-Dash/ManageService' element={< ManageService/>} />
@@ -76,7 +78,7 @@ const App = () => {
         </Route>
 
         {/* Admin Routes */}
-<Route path="/admin" element={<AdminProtected compo={<><Navbar /><Outlet /><Footer /></>} />}>
+<Route path="/admin" element={<AdminProtected compo={<><Outlet /></>} />}>
   <Route index element={<AdminDashboard />} />
   <Route path='/admin/manage-users' element={<ManageUsers />} />
   <Route path='/admin/manage-reports' element={<AdminManageReports />} />
@@ -88,7 +90,7 @@ const App = () => {
         
             <Route path='*' element={<h1>Page Not Found</h1>} />
       </Routes>
-      
+      <Footer />
         </BrowserRouter>
   </>
 }

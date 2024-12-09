@@ -1,23 +1,29 @@
-const asyncHandler = require("express-async-handler");
-const User = require("../models/user");
+const AsyncHandler = require("express-async-handler")
+const Organization = require("../models/Organization")
 
-// Controller to get a specific organization by email
-exports.getOrganizationByEmail = asyncHandler(async (req, res) => {
-  const { email } = req.params; // Get email from route parameters
-  
-  try {
-    // Fetch the user with role 'organization' and the specified email
-    const organization = await User.findOne({ email, role: "organization" });
+exports.getAllOrganizations = AsyncHandler(async(req,res)=> {
+    const result = await Organization.find()
+    res.status(200).json({message:"organizations Fetch SuccessFully",result})
+} )
+exports.getOrganizationsByCity = AsyncHandler(async (req, res) => {
+    const { city } = req.params; // Extract city from request parameters
 
-    if (!organization) {
-      return res.status(404).json({ message: "Organization not found" });
+    // Query organizations by city
+    const organizations = await Organization.find({ city });
+
+    if (organizations.length === 0) {
+        return res.status(404).json({ message: "No organizations found in this city." });
     }
 
-    res.status(200).json({
-      message: "Organization fetched successfully",
-      data: organization,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
+    res.status(200).json({ message: "Organizations fetched successfully", organizations });
+});
+
+exports.getAllCities = AsyncHandler(async (req, res) => {
+    const cities = await Organization.distinct('city'); // Get unique cities
+
+    if (cities.length === 0) {
+        return res.status(404).json({ message: "No cities found." });
+    }
+
+    res.status(200).json({ message: "Cities fetched successfully", cities });
 });

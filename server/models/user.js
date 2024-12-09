@@ -1,93 +1,36 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 
-const userSchema = new mongoose.Schema(
-  {
+const userSchema = new mongoose.Schema({
     name: {
-      type: String,
-      required: true,
+        type: String,
+        required: true
     },
     email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
+        type: String,
+        required: true,
+        unique: true
     },
     number: {
-      type: String,
-      required: true,
+        type: Number,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
     },
     role: {
-      type: String,
-      enum: ["user", "organization"], 
-      required: true,
-    },
-    orgName: {
-      type: String,
-      required: function () {
-        return this.role === "organization"; 
-      },
-    },
-    orgType: {
-      type: String,
-      required: function () {
-        return this.role === "organization"; // Only required for organizations
-      },
-    },
-    orgService: {
-      type: String,
-      required: function () {
-        return this.role === "organization"; // Only required for organizations
-      },
-    },
-    registrationNumber: {
-      type: String,
-      required: function () {
-        return this.role === "organization"; // Only required for organizations
-      },
-    },
-    contactPerson: {
-      type: String,
-      required: function () {
-        return this.role === "organization"; // Only required for organizations
-      },
-    },
-    contactInfo: {
-      type: String,
-      required: function () {
-        return this.role === "organization"; // Only required for organizations
-      },
-    },
-    address: {
-      type: String,
-      required: function () {
-        return this.role === "organization"; // Only required for organizations
-      },
-    },
-    city: {
-      type: String,
-      required: function () {
-        return this.role === "organization"; // Only required for organizations
-      },
-    },
-    description: {
-      type: String,
-      required: function () {
-        return this.role === "organization"; // Only required for organizations
-      },
+        type: String,
+        required: true,
+        enum:'user'
     },
     Active: {
-      type: Boolean,
-      default: true,
-    },
-    profileStatus: {
-      type: Boolean,
-      default: true, // Default to true for users
-    },
-  },
-  { timestamps: true }
-);
+        type: Boolean,
+        default:false,
+    }
+    
 
-module.exports = mongoose.model("User", userSchema);
+},{
+    timestamps:true
+})
+
+module.exports = mongoose.model("user",userSchema)

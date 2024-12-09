@@ -1,64 +1,50 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useLogoutMutation } from '../redux/api/authApi';
 import { FaBars } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import theme from '../theme';
+import { useOrgLogoutMutation } from '../redux/api/orgAuthApi';
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.user);
-  const [logout, { isSuccess, isError, error }] = useLogoutMutation();
+  const { org } = useSelector((state) => state.org);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+  const [logout, { isSuccess: isUserLogoutSuccess, isError: isUserLogoutError, error: userLogoutError }] =
+    useLogoutMutation();
+  const [orgLogout, { isSuccess: isOrgLogoutSuccess, isError: isOrgLogoutError, error: orgLogoutError }] =
+    useOrgLogoutMutation();
   const navigate = useNavigate();
 
   // Handle logout success or error
   useEffect(() => {
-    if (isSuccess) {
+    if (isUserLogoutSuccess || isOrgLogoutSuccess) {
       toast.success('Logout Successful');
       navigate('/');
     }
-    if (isError) {
-      toast.error(error?.data?.message || 'Logout failed. Try again.');
+    if (isUserLogoutError) {
+      toast.error(userLogoutError?.data?.message || 'User Logout failed. Try again.');
     }
-  }, [isSuccess, isError, error, navigate]);
+    if (isOrgLogoutError) {
+      toast.error(orgLogoutError?.data?.message || 'Organization Logout failed. Try again.');
+    }
+  }, [isUserLogoutSuccess, isOrgLogoutSuccess, isUserLogoutError, isOrgLogoutError, userLogoutError, orgLogoutError, navigate]);
 
   // Generate role-based navigation links
   const getRoleBasedLinks = () => {
-    switch (user?.role) {
-      case 'admin':
-        return (
-          <>
-             <li>
-            <Link to="/admin" className="hover:text-indigo-300">
-              Dashboard
-            </Link>
-          </li>
+    if (org) {
+      return (
+        <>
           <li>
-            <Link to="manage-users" className="hover:text-indigo-300">
-              Manage Users
-            </Link>
-          </li>
-          <li>
-            <Link to="manage-reports" className="hover:text-indigo-300">
-              Manage Reports
-            </Link>
-          </li>
-          <li>
-            <Link to="ManageOrganizations" className="hover:text-indigo-300">
-              ManageOrganizations
-            </Link>
-            </li>
-          </>
-        );
-      case 'organization':
-        return (
-          <>
-            <li>
             <Link to="/org-Dash" className="hover:text-gray-200">
               Organization Dashboard
             </Link>
           </li>
-          
           <li>
             <Link to="projects" className="hover:text-gray-200">
               Manage Projects
@@ -74,68 +60,107 @@ const Navbar = () => {
               Reports & Analytics
             </Link>
           </li>
-          </>
-        );
-      case 'user':
-        return (
-          <>
-            <li>
-              <Link to="/" className="text-lg font-serif">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link to="/about" className="text-lg font-serif">
-                About Us
-              </Link>
-            </li>
-            <li>
-              <Link to="/help" className="text-lg font-serif">
-                Help
-              </Link>
-            </li>
-            <li>
-              <Link to="/organizations" className="text-lg font-serif">
-                Organization
-              </Link>
-            </li>
-            <li>
-              <Link to="/contactus" className="text-lg font-serif">
-                Contact Us
-              </Link>
-            </li>
-          </>
-        );
-      default:
-        return (
-          <>
-             <li>
-              <Link to="/" className="text-lg font-serif">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link to="/about" className="text-lg font-serif">
-                About Us
-              </Link>
-            </li>
-            <li>
-              <Link to="/help" className="text-lg font-serif">
-                Help
-              </Link>
-            </li>
-            <li>
-              <Link to="/organizations" className="text-lg font-serif">
-                Organization
-              </Link>
-            </li>
-            <li>
-              <Link to="/contactus" className="text-lg font-serif">
-                Contact Us
-              </Link>
-            </li>
-          </>
-        );
+        </>
+      );
+    } else if (user) {
+      switch (user.role) {
+        case 'admin':
+          return (
+            <>
+              <li>
+                <Link to="/admin" className="hover:text-indigo-300">
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/manage-users" className="hover:text-indigo-300">
+                  Manage Users
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/Queries" className="hover:text-indigo-300">
+                  Manage Queries
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/ManageOrganizations" className="hover:text-indigo-300">
+                  Manage Organizations
+                </Link>
+              </li>
+            </>
+          );
+        case 'user':
+          return (
+            <>
+              <li>
+                <Link to="/" className="text-lg font-serif">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="text-lg font-serif">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/help" className="text-lg font-serif">
+                  Help
+                </Link>
+              </li>
+              <li>
+                <Link to="/organizations" className="text-lg font-serif">
+                  Organization
+                </Link>
+              </li>
+              <li>
+                <Link to="/contactus" className="text-lg font-serif">
+                  Contact Us
+                </Link>
+              </li>
+            </>
+          );
+        default:
+          return null;
+      }
+    } else {
+      return (
+        <>
+          <li>
+            <Link to="/" className="text-lg font-serif">
+              Home
+            </Link>
+          </li>
+          <li>
+            <Link to="/about" className="text-lg font-serif">
+              About Us
+            </Link>
+          </li>
+          <li>
+            <Link to="/help" className="text-lg font-serif">
+              Help
+            </Link>
+          </li>
+          <li>
+            <Link to="/organizations" className="text-lg font-serif">
+              Organization
+            </Link>
+          </li>
+          <li>
+            <Link to="/contactus" className="text-lg font-serif">
+              Contact Us
+            </Link>
+          </li>
+        </>
+      );
+    }
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    if (org) {
+      orgLogout();
+    } else if (user) {
+      logout();
     }
   };
 
@@ -179,7 +204,7 @@ const Navbar = () => {
 
       {/* Navbar End */}
       <div className="navbar-end gap-2">
-        {user ? (
+        {user || org ? (
           <div className="dropdown dropdown-end">
             <div tabIndex={0} role="button" className="text-2xl">
               <FaBars />
@@ -189,30 +214,44 @@ const Navbar = () => {
               className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
             >
               <li>
-                <span>{user.name}</span>
+                <span>{user?.name || org?.name}</span>
               </li>
-              {user.role === 'admin' ? (
-                <li>
-                  <Link to="/admin">View Profile</Link>
-                </li>
-              ) : user.role === 'organization' ? (
-                <li>
-                  <Link to="/org-dash">View Profile</Link>
-                </li>
-              ) : (
-                <li>
-                  <Link to="/user">View Profile</Link>
-                </li>
-              )}
               <li>
-                <button onClick={logout}>Logout</button>
+                <button onClick={handleLogout}>Logout</button>
               </li>
             </ul>
           </div>
         ) : (
-          <Link to="/userLogin">
-            <button className={`btn btn-${theme.btn}`}>Sign In</button>
-          </Link>
+          <div className="dropdown dropdown-end">
+      {/* Button */}
+      <button
+        tabIndex={0}
+        onClick={toggleDropdown}
+        className="btn btn-ghost bg-slate-200"
+      >
+        Login
+      </button>
+
+      {/* Dropdown Options */}
+      {isDropdownOpen && (
+        <ul
+          tabIndex={0}
+          className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+        >
+          <li>
+            <button >
+              <Link to='/userLogin' >Login as User</Link>
+            </button>
+          </li>
+          <li>
+            <button >
+            <Link to='/orgLogin' >Login as Organization</Link>
+            </button>
+          </li>
+        </ul>
+      )}
+    </div>
+
         )}
       </div>
     </div>

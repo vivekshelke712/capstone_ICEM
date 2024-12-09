@@ -3,92 +3,31 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const validator = require("validator")
 const User = require("../models/user")
+const Organization = require("../models/Organization")
 
+exports.register = asyncHandler(async (req,res) => {
+  const { name, email, password, role, number } = req.body
+  if (!validator.isEmail(email)) {
+      return res.status(400).json({message:"Please provide valid email" })
+  }
+  if (!validator.isStrongPassword(password)) {
+      return res.status(400).json({message:"please enter srong password"})
+  }
+  if (!name) {
+      return res.status(400).json({message:"please enter Name"})
+  }
+  if (!number) {
+      return res.status(400).json({message:"enter a valid number"})
+  }
+  const result = await User.findOne({ email })
+  if (result) {
+      return res.status(400).json("already user Exist")
+  }
+  const hashPass = await bcrypt.hash(password, 10)
+  await User.create({ ...req.body, password: hashPass })
+  res.status(201).json({message: "user Register Success"})
+})
 
-exports.register = asyncHandler(async (req, res) => {
-    const {
-      name,
-      email,
-      password,
-      number,
-      role,
-      orgName,
-      orgType,
-      orgService,
-      registrationNumber,
-      contactPerson,
-      contactInfo,
-      address,
-      city,
-      description
-    } = req.body;
-  
-    // Validate required fields
-    if (!name || !email || !password || !number || !role) {
-      return res.status(400).json({ message: "Name, email, password, number, and role are required" });
-    }
-  
-    // If role is organization, validate additional organization fields
-    if (role === "organization") {
-      if (!orgName || !orgType || !orgService || !registrationNumber || !contactPerson || !contactInfo || !address || !city) {
-        return res.status(400).json({ message: "All organization fields are required" });
-      }
-    }
-  
-    // Validate email format
-    if (!validator.isEmail(email)) {
-      return res.status(400).json({ message: "Invalid email format" });
-    }
-  
-    // Validate phone number
-    if (!validator.isMobilePhone(number.toString(), "en-IN")) {
-      return res.status(400).json({ message: "Invalid phone number" });
-    }
-  
-    // Validate password strength
-    if (!validator.isStrongPassword(password)) {
-      return res.status(400).json({
-        message: "Password must be at least 6 characters long, with one uppercase letter, one symbol, and one number"
-      });
-    }
-  
-    // Check if the email already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists with this email" });
-    }
-  
-    // Hash the password
-    const hashPassword = await bcrypt.hash(password, 10);
-  
-    // Create a new user
-    const user = new User({
-      name,
-      email,
-      password: hashPassword,
-      number,
-      role,
-      orgName: role === "organization" ? orgName : undefined,
-      orgType: role === "organization" ? orgType : undefined,
-      orgService: role === "organization" ? orgService : undefined,
-      registrationNumber: role === "organization" ? registrationNumber : undefined,
-      contactPerson: role === "organization" ? contactPerson : undefined,
-      contactInfo: role === "organization" ? contactInfo : undefined,
-      address: role === "organization" ? address : undefined,
-      city: role === "organization" ? city : undefined,
-      description: role === "organization" ? description : undefined,
-      Active: true,
-      profileStatus: role === "organization" ? false : true, // Default true for non-org
-    });
-  
-    // Save the user
-    await user.save();
-  
-    // Sanitize response data (remove password from response)
-    user.password = undefined;
-    res.status(201).json({ message: "User registered successfully", data: user });
-  });
-  
 
   
 exports.login = asyncHandler(async (req,res) => {
@@ -128,3 +67,79 @@ exports.logout = asyncHandler(async (req, res) => {
     res.clearCookie("userAuth")
     res.status(200).json({message: "logout Success"})
 })
+
+exports.orgRegister = asyncHandler(async (req, res) => {
+  const { orgName, orgEmail, password, role, number, registrayionNumber, address, city, description } = req.body;
+
+  // Input validations
+  if (!validator.isEmail(orgEmail)) {
+    return res.status(400).json({ message: "Please provide a valid email" });
+  }
+  if (!validator.isStrongPassword(password)) {
+    return res.status(400).json({ message: "Please enter a strong password" });
+  }
+  // if (!orgName || !number || !registrayionNumber || !address || !city || !description) {
+  //   return res.status(400).json({ message: "Please provide all required fields" });
+  // }
+
+  // Check if the organization already exists
+  const existingOrg = await Organization.findOne({ orgEmail });
+  if (existingOrg) {
+    return res.status(400).json({ message: "Organization already exists" });
+  }
+
+  // Hash the password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Create new organization
+  await Organization.create({ ...req.body, password: hashedPassword });
+
+  res.status(201).json({ message: "Organization registration successful" });
+});
+
+exports.orgLogin = asyncHandler(async (req, res) => {
+  const { orgEmail, password } = req.body
+
+  // Check if email and password are provided
+  if (!orgEmail || !password) {
+    return res.status(400).json({ message: "Email and password are required" })
+  }
+
+  // Validate email
+  if (!validator.isEmail(orgEmail)) {
+    return res.status(400).json({ message: "Please enter a valid email" })
+  }
+
+  // Find organization by email
+  const organization = await Organization.findOne({ orgEmail })
+  if (!organization) {
+    return res.status(400).json({ message: "Organization not registered with us" })
+  }
+
+  // Compare password
+  const isMatch = await bcrypt.compare(password, organization.password)
+  if (!isMatch) {
+    return res.status(400).json({ message: "Password does not match" })
+  }
+
+  // Generate JWT
+  const token = jwt.sign({ orgId: organization._id }, process.env.JWT_KEY, { expiresIn: "1d" })
+
+  // Set cookie
+  res.cookie("orgAuth", token, { maxAge: 1000 * 60 * 60 * 6, httpOnly: true })
+
+  res.status(200).json({
+    message: "Login successful",
+    organization: {
+      orgName: organization.orgName,
+      orgEmail: organization.orgEmail,
+      role: organization.role,
+      address: organization.address,
+    },
+  })
+})
+exports.orgLogout = asyncHandler(async (req, res) => {
+  res.clearCookie("orgAuth") // Clear the organization authentication cookie
+  res.status(200).json({ message: "Logout successful" })
+})
+

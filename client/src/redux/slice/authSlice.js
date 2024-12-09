@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { authApi } from "../api/authApi";
+import { orgAuthApi } from "../api/orgAuthApi";
 
 const authSlice= createSlice({
     name: "authSlice",
     initialState: {
-        user: JSON.parse(localStorage.getItem("auth"))
+        user:JSON.parse(localStorage.getItem("auth")),
+        org:JSON.parse(localStorage.getItem("org"))
     },
     reducers: {
     },
@@ -14,6 +16,12 @@ const authSlice= createSlice({
         })
         .addMatcher(authApi.endpoints.logout.matchFulfilled, (state, { payload }) => {
             state.user = null
+        })
+        .addMatcher(orgAuthApi.endpoints.orgLogin.matchFulfilled, (state, { payload }) => {
+            state.org = payload
+        })
+        .addMatcher(orgAuthApi.endpoints.orgLogout.matchFulfilled, (state, { payload }) => {
+            state.org = null
         })
         
        

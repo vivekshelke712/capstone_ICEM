@@ -29,7 +29,7 @@ const organizations = [
 
 const Organizations = () => {
   return <>
-  <Navbar />
+  
     <div className="bg-gray-50 min-h-screen py-8">
       <header className="text-center py-6">
         <h1 className="text-4xl font-bold text-purple-600">Our Partner Organizations</h1>
@@ -47,7 +47,7 @@ const Organizations = () => {
       </div>
     </div>
   );
-  <Footer />
+  
   </>
 };
 
