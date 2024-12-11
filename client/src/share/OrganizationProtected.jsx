@@ -2,10 +2,10 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Navigate} from 'react-router-dom'
 const OrganizationProtected = ({compo}) => {
-    const {org} = useSelector(state => state.org)
+    const {user} = useSelector(state => state.user)
     return <>
         {
-            (org && org.role ==="organization") ? compo : <Navigate to='/' />
+            (user && user.role ==="organization") ? compo : <Navigate to='/' />
         }
     </>
 }

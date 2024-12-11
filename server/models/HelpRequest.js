@@ -5,12 +5,6 @@ const helpRequestSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    age: {
-        type: Number,
-        required: true,
-        min: 1,
-        max: 100,
-    },
     needType: {
         type: String,
         required: true,

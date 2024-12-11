@@ -1,12 +1,14 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const UserDashboard = () => {
-  const user = {
-    name: "John Doe", // Replace with actual user data from your state/store
-    email: "johndoe@example.com",
-    role: "user",
-  };
+  // const user = {
+  //   name: "John Doe", // Replace with actual user data from your state/store
+  //   email: "johndoe@example.com",
+  //   role: "user",
+  // };
+  const {user } = useSelector(state => state.user)
 
   const registeredCases = [
     {

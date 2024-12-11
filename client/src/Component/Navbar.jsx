@@ -1,70 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { useLogoutMutation } from '../redux/api/authApi';
-import { FaBars } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import theme from '../theme';
-import { useOrgLogoutMutation } from '../redux/api/orgAuthApi';
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useLogoutMutation } from "../redux/api/authApi";
+import { FaBars } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.user);
-  const { org } = useSelector((state) => state.org);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-  const [logout, { isSuccess: isUserLogoutSuccess, isError: isUserLogoutError, error: userLogoutError }] =
-    useLogoutMutation();
-  const [orgLogout, { isSuccess: isOrgLogoutSuccess, isError: isOrgLogoutError, error: orgLogoutError }] =
-    useOrgLogoutMutation();
   const navigate = useNavigate();
 
-  // Handle logout success or error
-  useEffect(() => {
-    if (isUserLogoutSuccess || isOrgLogoutSuccess) {
-      toast.success('Logout Successful');
-      navigate('/');
-    }
-    if (isUserLogoutError) {
-      toast.error(userLogoutError?.data?.message || 'User Logout failed. Try again.');
-    }
-    if (isOrgLogoutError) {
-      toast.error(orgLogoutError?.data?.message || 'Organization Logout failed. Try again.');
-    }
-  }, [isUserLogoutSuccess, isOrgLogoutSuccess, isUserLogoutError, isOrgLogoutError, userLogoutError, orgLogoutError, navigate]);
+  // Hooks for logout mutation
+  const [logout, { isSuccess: userLogoutSuccess, isError: userLogoutError, error: userError }] =
+    useLogoutMutation();
 
-  // Generate role-based navigation links
+  useEffect(() => {
+    if (userLogoutSuccess) {
+      toast.success("Logged out successfully.");
+      navigate(0); // Reload the page to reset the state
+    }
+
+    if (userLogoutError) {
+      toast.error(userError?.data?.message || "User logout failed. Please try again.");
+    }
+  }, [userLogoutSuccess, userLogoutError, userError, navigate]);
+
+  const handleLogout = () => {
+    logout(); // Call user logout mutation
+  };
+
   const getRoleBasedLinks = () => {
-    if (org) {
-      return (
-        <>
-          <li>
-            <Link to="/org-Dash" className="hover:text-gray-200">
-              Organization Dashboard
-            </Link>
-          </li>
-          <li>
-            <Link to="projects" className="hover:text-gray-200">
-              Manage Projects
-            </Link>
-          </li>
-          <li>
-            <Link to="ManageService" className="hover:text-gray-200">
-              Manage Services
-            </Link>
-          </li>
-          <li>
-            <Link to="reports" className="hover:text-gray-200">
-              Reports & Analytics
-            </Link>
-          </li>
-        </>
-      );
-    } else if (user) {
+    if (user) {
       switch (user.role) {
-        case 'admin':
+        case "admin":
           return (
             <>
               <li>
@@ -89,7 +56,7 @@ const Navbar = () => {
               </li>
             </>
           );
-        case 'user':
+        case "user":
           return (
             <>
               <li>
@@ -115,6 +82,31 @@ const Navbar = () => {
               <li>
                 <Link to="/contactus" className="text-lg font-serif">
                   Contact Us
+                </Link>
+              </li>
+            </>
+          );
+        case "organization":
+          return (
+            <>
+              <li>
+                <Link to="/org-Dash" className="hover:text-indigo-300">
+                  Organization Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link to="/org-Dash/projects" className="hover:text-indigo-300">
+                  Manage Tasks
+                </Link>
+              </li>
+              <li>
+                <Link to="/org-Dash/ManageService" className="hover:text-indigo-300">
+                  Manage Members
+                </Link>
+              </li>
+              <li>
+                <Link to="/org-Dash/reports" className="hover:text-indigo-300">
+                  View Queries
                 </Link>
               </li>
             </>
@@ -155,18 +147,8 @@ const Navbar = () => {
     }
   };
 
-  // Handle logout
-  const handleLogout = () => {
-    if (org) {
-      orgLogout();
-    } else if (user) {
-      logout();
-    }
-  };
-
   return (
     <div className="navbar bg-base-100">
-      {/* Navbar Start */}
       <div className="navbar-start">
         <Link to="/" className="ml-6">
           <img src="public/assets/logo2.png" alt="Logo" height="75px" width="150px" />
@@ -180,12 +162,7 @@ const Navbar = () => {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h8m-8 6h16"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
             </svg>
           </div>
           <ul
@@ -197,14 +174,12 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Navbar Center */}
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">{getRoleBasedLinks()}</ul>
       </div>
 
-      {/* Navbar End */}
       <div className="navbar-end gap-2">
-        {user || org ? (
+        {user ? (
           <div className="dropdown dropdown-end">
             <div tabIndex={0} role="button" className="text-2xl">
               <FaBars />
@@ -214,8 +189,20 @@ const Navbar = () => {
               className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
             >
               <li>
-                <span>{user?.name || org?.name}</span>
+                <span>{user?.name}</span>
               </li>
+              <li>
+  {user && user.role === 'user' && (
+    <Link to="/user">View Profile</Link>
+  )}
+  {user && user.role === 'admin' && (
+    <Link to="/admin">Go to Dashboard</Link>
+  )}
+  {user && user.role === 'organization' && (
+    <Link to="/org-Dash">Go to Dashboard</Link>
+  )}
+</li>
+
               <li>
                 <button onClick={handleLogout}>Logout</button>
               </li>
@@ -223,35 +210,25 @@ const Navbar = () => {
           </div>
         ) : (
           <div className="dropdown dropdown-end">
-      {/* Button */}
-      <button
-        tabIndex={0}
-        onClick={toggleDropdown}
-        className="btn btn-ghost bg-slate-200"
-      >
-        Login
-      </button>
-
-      {/* Dropdown Options */}
-      {isDropdownOpen && (
-        <ul
-          tabIndex={0}
-          className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
-        >
-          <li>
-            <button >
-              <Link to='/userLogin' >Login as User</Link>
-            </button>
-          </li>
-          <li>
-            <button >
-            <Link to='/orgLogin' >Login as Organization</Link>
-            </button>
-          </li>
-        </ul>
-      )}
-    </div>
-
+            <div tabIndex={0} role="button" className="btn m-1">
+              Login
+            </div>
+            <ul
+              tabIndex={0}
+              className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+            >
+              <Link to="/userLogin">
+                <li>
+                  <a>Login as User</a>
+                </li>
+              </Link>
+              <Link to="/orglogin">
+                <li>
+                  <a>Login as Organization</a>
+                </li>
+              </Link>
+            </ul>
+          </div>
         )}
       </div>
     </div>

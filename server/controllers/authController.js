@@ -27,9 +27,6 @@ exports.register = asyncHandler(async (req,res) => {
   await User.create({ ...req.body, password: hashPass })
   res.status(201).json({message: "user Register Success"})
 })
-
-
-  
 exports.login = asyncHandler(async (req,res) => {
     const { email, password } = req.body 
     if (!email || !password) {
@@ -57,7 +54,8 @@ exports.login = asyncHandler(async (req,res) => {
         result: {
             name: result.name,
             email: result.email,
-            role:result.role
+            role:result.role,
+            Active:result.Active
         }
     })
 })
@@ -69,33 +67,52 @@ exports.logout = asyncHandler(async (req, res) => {
 })
 
 exports.orgRegister = asyncHandler(async (req, res) => {
-  const { orgName, orgEmail, password, role, number, registrayionNumber, address, city, description } = req.body;
+  const { orgName, orgEmail, password, number, registrationNumber, address, city, description, orgType } = req.body;
 
-  // Input validations
-  if (!validator.isEmail(orgEmail)) {
-    return res.status(400).json({ message: "Please provide a valid email" });
+  // Input validation
+  if (!orgName || !orgEmail || !password || !number || !registrationNumber || !address || !city || !description || !orgType) {
+    return res.status(400).json({ message: "All fields are required." });
   }
-  if (!validator.isStrongPassword(password)) {
-    return res.status(400).json({ message: "Please enter a strong password" });
-  }
-  // if (!orgName || !number || !registrayionNumber || !address || !city || !description) {
-  //   return res.status(400).json({ message: "Please provide all required fields" });
-  // }
 
-  // Check if the organization already exists
+  // Check if email already exists in Users or Organizations
   const existingOrg = await Organization.findOne({ orgEmail });
-  if (existingOrg) {
-    return res.status(400).json({ message: "Organization already exists" });
+  const existingUser = await User.findOne({ email: orgEmail });
+  if (existingOrg || existingUser) {
+    return res.status(400).json({ message: "Email already exists. Please use a different email." });
   }
 
-  // Hash the password
+  // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Create new organization
-  await Organization.create({ ...req.body, password: hashedPassword });
+  // Create a user for the organization
+  const newUser = await User.create({
+    name: orgName,
+    email: orgEmail,
+    password: hashedPassword,
+    number,
+    role: "organization",
+  });
 
-  res.status(201).json({ message: "Organization registration successful" });
+  // Create the organization and associate it with the user
+  const newOrg = await Organization.create({
+    orgName,
+    orgEmail,
+    number,
+    registrationNumber,
+    address,
+    city,
+    description,
+    orgType,
+    user: newUser._id,
+  });
+
+  // Update the user's 'active' key to true
+  newUser.active = true;
+  await newUser.save();
+
+  res.status(201).json({ message: "Organization registered successfully", organization: newOrg });
 });
+
 
 exports.orgLogin = asyncHandler(async (req, res) => {
   const { orgEmail, password } = req.body

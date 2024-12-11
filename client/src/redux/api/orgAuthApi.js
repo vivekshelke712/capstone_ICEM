@@ -1,53 +1,55 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const orgAuthApi = createApi({
-    reducerPath: "authApi",
+    reducerPath: "orgAuthApi",
     baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/v1/auth" }),
-    tagTypes: ["authapi"],
-    endpoints: (builder) => {
-        return {
-            orgRegister: builder.mutation({
-                query: userData => {
-                    return {
-                        url: "/orgregister",
-                        method: "POST",
-                        body:userData
-                    }
-                },
-                providesTags: ["authApi"]
+    tagTypes: ["authApi"],
+    endpoints: (builder) => ({
+        orgRegister: builder.mutation({
+            query: (userData) => ({
+                url: "/orgregister",
+                method: "POST",
+                body: userData,
             }),
-            orgLogin: builder.mutation({
-                query: userData => {
-                    return {
-                        url: "/orglogin",
-                        method: "POST",
-                        body: userData
-                    }
-                },
-                transformErrorResponse : error => data.message,
-                transformResponse: data => {
-                     localStorage.setItem("org",JSON.stringify(data.result))
-                    return data.result
-                },
-                invalidatesTags: ["authapi"]
+            providesTags: ["authApi"],
+        }),
+        orgLogin: builder.mutation({
+            query: (userData) => ({
+                url: "/orglogin",
+                method: "POST",
+                body: userData,
             }),
-             orgLogout: builder.mutation({
-                query: () => {
-                    return {
-                        url: "/orglogout",
-                        method: "POST"
-                    }
-                },
-                transformResponse: (data) => {
-                    localStorage.removeItem("auth")
-                    return data
-                },
-                invalidatesTags:["authapi"]
-               
+            transformResponse: (data) => {
+                console.log("Received data:", data); // Check the entire response
+                if (data && data.result) {
+                    localStorage.setItem("org", JSON.stringify(data.result));
+                    return data.result;
+                } else {
+                    console.error("No 'result' field found in response:", data);
+                    return null; // Handle the case where result is missing
+                }
+            }
+            ,
+            
+            invalidatesTags: ["authApi"],
+        }),
+        orgLogout: builder.mutation({
+            query: () => ({
+                url: "/orglogout",
+                method: "POST",
             }),
-        
-        }
-    }
-})
+            transformResponse: (data) => {
+                localStorage.removeItem("org");
+                return data;
+            },
+            invalidatesTags: ["authApi"],
+        }),
+    }),
+});
 
-export const { useOrgLoginMutation , useOrgLogoutMutation,useOrgRegisterMutation} = orgAuthApi
+// Export hooks for components to use
+export const {
+    useOrgRegisterMutation,
+    useOrgLoginMutation,
+    useOrgLogoutMutation,
+} = orgAuthApi;

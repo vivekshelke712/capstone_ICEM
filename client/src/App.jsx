@@ -25,7 +25,7 @@ import UserLogin from './pages/userPages/UserLogin'
 import OrganizationProtected from './share/OrganizationProtected'
 import OrganizationNavbar from './Component/organizationComponent/OrganizationNavbar'
 import OrganizationDashboard from './pages/OrganizationPages/OrgDashboard'
-import OrganizationRegistration from './pages/OrganizationPages/OrganizationRegistration'
+
 import UserDashboard from './pages/userPages/UserDashboard'
 import { ToastContainer } from 'react-toastify'
 import OrgProjects from './pages/OrganizationPages/OrgProjects'
@@ -34,7 +34,7 @@ import Reports from './pages/OrganizationPages/Reports'
 import ManageUsers from './pages/AdminPages/ManageUser'
 import AdminManageReports from './pages/AdminPages/AdminManageReports'
 import OrganizationManagement from './pages/AdminPages/ManageOrgnization'
-import OrganizationLogin from './pages/OrganizationPages/OrganizationLogin'
+
 const App = () => {
   return <>
     <div><Toaster
@@ -52,8 +52,8 @@ const App = () => {
             <Route path='/test' element={<Test />} />
             <Route path='/userLogin' element={<UserLogin />} />
           <Route path='/userRegister' element={<UserRegistration />} />
-          <Route path='/orgRegister' element={<OrganizationRegistration />} />
-          <Route path='/orgLogin' element={<OrganizationLogin />} />
+          
+          
              {/* <Route path='/jobDetails/:jobId' element={<JobDetails />} /> */}
             <Route path='/help' element={<Help/>} />
             <Route path='/contactus' element={<ContactUs />} />
@@ -65,11 +65,11 @@ const App = () => {
               
           
           
-        <Route path='/user' element={<> <UserProtected compo={<><Navbar /> <Outlet /> </>} /></>}>
+        <Route path='/user' element={<> <UserProtected compo={<> <Outlet /> </>} /></>}>
           <Route index element={<UserDashboard />} />
         </Route>
 
-        {/* Teacher Routes */}
+        {/* Organization Routes */}
            <Route path='/org-Dash' element={<> <OrganizationProtected compo={<> <Outlet /> </>} /></>}>
           <Route index element={< OrganizationDashboard/>} />
           <Route path='/org-Dash/projects' element={< OrgProjects/>} />

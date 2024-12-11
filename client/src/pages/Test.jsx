@@ -1,22 +1,11 @@
-import React from 'react';
-import { useGetAllOrgnizationQuery } from '../redux/api/orgAPI';
+import React from 'react'
 
 const Test = () => {
-  const { data } = useGetAllOrgnizationQuery();
-
   return (
-    <>
-      {data &&  (
-        data.map((org) => (
-          <div key={org._id}> {/* Assuming each organization has a unique _id */}
-            <h3>{org.name}</h3>
-            <p>{org.city}</p>
-          </div>
-        ))
-      )}
-     
-    </>
-  );
-};
+    <div>
+      
+    </div>
+  )
+}
 
-export default Test;
+export default Test

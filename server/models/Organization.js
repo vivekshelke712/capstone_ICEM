@@ -1,49 +1,50 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
-const orgSchema = new mongoose.Schema({
+const orgSchema = new mongoose.Schema(
+  {
     orgName: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     orgEmail: {
-        type: String,
-        required: true,
-        unique: true
+      type: String,
+      required: true,
+      unique: true,
     },
     number: {
-        type: Number,
-        required: true
-    },
-    password: {
-        type: String,
-        required: true
-    },
-    role: {
-        type: String,
-        required: true,
-        enum: ['organization'] // Correctly defined as an array
+      type: Number,
+      required: true,
     },
     registrationNumber: {
-        type:String,
-        required:true,
+      type: String,
+      required: true,
     },
     address: {
-        type:String,
-        required:true
+      type: String,
+      required: true,
     },
-    city:{
-        type:String,
-        required :true,
-
+    city: {
+      type: String,
+      required: true,
     },
-    description:{
-        type :String,
-        required:true
-    }
-    
+    description: {
+      type: String,
+      required: true,
+    },
+    orgType: {
+      type: String,
+      required: true,
+      enum: ["AnimalShelter", "OldAgeHome", "EducationalHelp"],
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user", // Reference to the User model
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-},{
-    timestamps:true
-})
-
-module.exports = mongoose.model("organization",orgSchema)
+module.exports = mongoose.model("organization", orgSchema);

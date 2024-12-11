@@ -1,67 +1,33 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-// import { getAllJobs } from "../../../../server/controllers/userController"
 
-export const userApi = createApi({
-    reducerPath: "userApi",
-    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/v1/user/" }),
-    tagTypes: ["userApi"],
+export const ContactSlice = createApi({
+    reducerPath: "api",
+    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000" }),
+    tagTypes: ["tagName"],
     endpoints: (builder) => {
         return {
-            getAllJobs: builder.query({
+            getUsers: builder.query({
                 query: () => {
                     return {
-                        url: "/getJobs",
+                        url: "/apiEndPoint",
                         method: "GET"
                     }
                 },
-                transformResponse : data => data.result,
-                providesTags: ["userApi"]
+                providesTags: ["tagName"]
             }),
-            addResume: builder.mutation({
-                query: () => {
+            addUser: builder.mutation({
+                query: userData => {
                     return {
-                        url: "/add-resume",
-                        method: "POST"
+                        url: "/apiEndPoint",
+                        method: "POST",
+                        body: userData
                     }
                 },
-                // transformResponse : data => data.result,
-                providesTags: ["userApi"]
+                invalidatesTags: ["tagName"]
             }),
-            getAllUser: builder.query({
-                query: () => {
-                    return {
-                        url: '/getAllUser',
-                        method:"GET"
-                    }
-                }
-            }),
-
-
-            getJobDetails: builder.query({
-             query: jobId => {
-             return {
-                url: `/getJobDetails/${jobId}`,
-                method: "GET",
-                 };
-    },
-    transformResponse: data => data.result,
-            }),
-
-      applyForJob: builder.mutation({
-      query: ({ jobId, userId }) => ({
-        url: '/job-applications',
-        method: 'POST',
-        body: { jobId, userId },
-      }),
-      invalidatesTags: ['JobApplications'],
-      }),
-      
-      
-
-            
         
         }
     }
 })
 
-export const { useGetAllJobsQuery,useAddResumeMutation,useGetJobDetailsQuery,useApplyForJobMutation } = userApi
+export const { useGetUsersQuery, useAddUserMutation} = ContactSlice
