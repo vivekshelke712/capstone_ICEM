@@ -34,6 +34,7 @@ import Reports from './pages/OrganizationPages/Reports'
 import ManageUsers from './pages/AdminPages/ManageUser'
 import AdminManageReports from './pages/AdminPages/AdminManageReports'
 import OrganizationManagement from './pages/AdminPages/ManageOrgnization'
+import PageNotFound from './share/PageNotFound'
 
 const App = () => {
   return <>
@@ -88,7 +89,7 @@ const App = () => {
   {/* <Route path="/admin/application-details" element={<ApplicationDetails />} /> */}
 </Route>
         
-            <Route path='*' element={<h1>Page Not Found</h1>} />
+            <Route path='*' element={ <PageNotFound /> } />
       </Routes>
       <Footer />
         </BrowserRouter>
