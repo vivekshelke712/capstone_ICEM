@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useFormik } from 'formik';
+import {Link} from 'react-router-dom'
 import * as Yup from 'yup';
 import { useGetAllOrgnizationQuery } from '../../redux/api/orgAPI';
 
@@ -21,7 +22,7 @@ const Help = () => {
       description: '',
       city: '',
       organization: '',
-      email: user.email,
+      email: '',
       isApproved: false,
     },
     validationSchema: Yup.object({
@@ -58,6 +59,7 @@ const Help = () => {
 
   return<>
   {
+  user ? 
     <div className="container mx-auto p-4">
     <h2 className="text-2xl font-bold mb-4">Help Request Form</h2>
     <form onSubmit={formik.handleSubmit} className="space-y-4">
@@ -196,6 +198,10 @@ const Help = () => {
         </button>
       </div>
     </form>
+  </div>
+  : <div>
+    <h1>Please Login to See this Page</h1>
+    <Link to='/userLogin'> Login </Link>
   </div>
   }
   

@@ -1,12 +1,12 @@
 import React from 'react';
 import { useGetAllOrgnizationQuery } from '../../redux/api/orgAPI';
-// import Footer from '../../Component/Footer';
-// import Navbar from '../../Component/Navbar';
+import partner from '../../assets/partnerab.jpg'
 
-// import { useGetAllOrganizationQuery } from '../../api/organizationApi'; // Adjust the import based on your file structure
+
+
 
 const Organizations = () => {
-  // Fetch organization data using the query
+ 
   const { data: organizations, isLoading, isError } = useGetAllOrgnizationQuery()
 
   if (isLoading) {
@@ -29,7 +29,7 @@ const Organizations = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 border lg:grid-cols-3 xl:grid-cols-4 gap-8 px-4">
           {organizations.map((org) => (
             <div key={org._id} className="bg-white border p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
-              <img src="https://via.placeholder.com/150x150?text=Organization" alt={org.orgName} className="w-full h-32 object-cover rounded-md" />
+              <img src={partner} alt={org.orgName} className="w-full h-32 object-cover rounded-md" />
               <h3 className="text-xl font-semibold mt-4">{org.orgName}</h3>
               <p className="text-gray-600 mt-2">{org.description}</p>
               <p className="text-gray-500 mt-1">Email: {org.orgEmail}</p>
