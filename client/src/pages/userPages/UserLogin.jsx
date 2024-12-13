@@ -7,7 +7,6 @@ import Navbar from '../../Component/Navbar';
 import Footer from '../../Component/Footer';
 import { IoMdEye, IoIosEyeOff } from 'react-icons/io';
 
-
 const UserLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginUser, { isSuccess, isError, error }] = useLoginMutation();
@@ -61,11 +60,10 @@ const UserLogin = () => {
 
   return (
     <>
-      
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center py-12 px-6 lg:px-8">
-        <div className="w-full max-w-md space-y-8">
+      <div className="min-h-screen  flex flex-col items-center justify-center py-12 px-6 lg:px-8">
+        <div className="w-full max-w-md space-y-8 bg-white rounded-lg shadow-xl p-10">
           <div>
-            <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">
+            <h2 className="text-center text-4xl font-bold tracking-tight text-gray-900">
               Sign in to your account
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
@@ -91,7 +89,7 @@ const UserLogin = () => {
                   required
                   value={loginData.email}
                   onChange={handleChange}
-                  className="relative block w-full rounded-t-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  className="relative block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-4"
                   placeholder="Email address"
                 />
               </div>
@@ -106,7 +104,7 @@ const UserLogin = () => {
                   required
                   value={loginData.password}
                   onChange={handleChange}
-                  className="relative block w-full rounded-b-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  className="relative block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-4"
                   placeholder="Password"
                 />
                 <div
@@ -122,12 +120,10 @@ const UserLogin = () => {
               </div>
             </div>
 
-          
-
             <div>
               <button
                 type="submit"
-                className="group relative w-full flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                className="group relative w-full flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-transform transform hover:scale-105"
               >
                 Log in
               </button>
@@ -135,7 +131,6 @@ const UserLogin = () => {
           </form>
         </div>
       </div>
-      
     </>
   );
 };

@@ -1,42 +1,44 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { useGetAllRequesByEmailQuery } from '../../redux/api/helpApi';
 
 const RequestTable = () => {
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useSelector(state => state.user);
+  console.log('User:', user);
 
-  // Dummy data for testing
-  const dummyData = [
-    { id: 1, description: "Food delivery for shelter home", status: "Pending" },
-    { id: 2, description: "Clothing drive request", status: "Pending" },
-    { id: 3, description: "Medical supplies for orphanage", status: "Approved" },
-  ];
+  if (!user || !user.email) {
+    console.log("User not logged in or email not available.");
+    return null; // Do not render anything if user is not logged in
+  }
 
-  useEffect(() => {
-    // Simulate API call delay
-    setTimeout(() => {
-      setRequests(dummyData);
-      setLoading(false);
-    }, 1000); // 1-second delay to simulate loading
-  }, []);
+  // Trigger query to fetch data
+  const { data, error, isLoading } = useGetAllRequesByEmailQuery(user.email);
 
-  const handleApprove = (id) => {
-    setRequests((prevRequests) =>
-      prevRequests.map((request) =>
-        request.id === id ? { ...request, status: "Approved" } : request
-      )
-    );
-  };
+  // Log the query states
+  if (isLoading) {
+    console.log("Loading user-specific requests...");
+  }
 
-  const handleReject = (id) => {
-    setRequests((prevRequests) =>
-      prevRequests.map((request) =>
-        request.id === id ? { ...request, status: "Rejected" } : request
-      )
-    );
-  };
+  if (error) {
+    console.error("Error loading requests:", error.message);
+  }
 
-  if (loading) {
-    return <p>Loading requests...</p>;
+  // Print the fetched data to the console
+  console.log("Fetched data:", data);
+
+  // Ensure the data is valid and extract the array if necessary
+  const requests = data?.data || []; // Safely access `data.data` and default to an empty array if not available
+
+  if (isLoading) {
+    return <p>Loading user-specific requests...</p>;
+  }
+
+  if (error) {
+    return <p>Error loading requests: {error.message}</p>;
+  }
+
+  if (requests.length === 0) {
+    return <p>No requests found for this user.</p>;
   }
 
   return (
@@ -48,30 +50,15 @@ const RequestTable = () => {
             <th className="border border-gray-300 px-4 py-2">ID</th>
             <th className="border border-gray-300 px-4 py-2">Description</th>
             <th className="border border-gray-300 px-4 py-2">Status</th>
-            <th className="border border-gray-300 px-4 py-2">Actions</th>
           </tr>
         </thead>
         <tbody>
           {requests.map((request) => (
-            <tr key={request.id}>
-              <td className="border border-gray-300 px-4 py-2">{request.id}</td>
+            <tr key={request._id}>
+              <td className="border border-gray-300 px-4 py-2">{request._id}</td>
               <td className="border border-gray-300 px-4 py-2">{request.description}</td>
-              <td className="border border-gray-300 px-4 py-2">{request.status}</td>
               <td className="border border-gray-300 px-4 py-2">
-                <button
-                  className="bg-green-500 text-white px-4 py-2 rounded mr-2"
-                  onClick={() => handleApprove(request.id)}
-                  disabled={request.status !== "Pending"}
-                >
-                  Approve
-                </button>
-                <button
-                  className="bg-red-500 text-white px-4 py-2 rounded"
-                  onClick={() => handleReject(request.id)}
-                  disabled={request.status !== "Pending"}
-                >
-                  Reject
-                </button>
+                {request.isApproved ? 'Approved' : 'Pending'}
               </td>
             </tr>
           ))}

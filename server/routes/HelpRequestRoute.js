@@ -1,8 +1,12 @@
-const express = require("express");
-const HelpRequest = require("../models/HelpRequest");
+const express = require('express');
+const { createHelpRequest, getHelpRequestByEmail } = require('../controllers/HelpRequestController');
 
-const router = express.Router()
+// console.log('createHelpRequest:', createHelpRequest); // Should not be undefined
+// console.log('getHelpRequestByEmail:', getHelpRequestByEmail);  // Should not be undefined
 
-router.post('/request',HelpRequest)
+const router = express.Router();
 
-module.exports = router
+router.get('/getHelpRequestByEmail/:email',getHelpRequestByEmail);
+router.post('/help-request', createHelpRequest);
+
+module.exports = router;

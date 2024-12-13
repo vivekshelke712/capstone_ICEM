@@ -1,11 +1,7 @@
-// const router = require('./authroute')
+const express = require('express');
+const router = express.Router();
+const { getAllUsers } = require('../controllers/adminController'); // Adjust the path
 
-const { adminJobPost, getAllUsers } = require('../controllers/adminController')
+router.get('/getAllUsers', getAllUsers);
 
-const router = require('express').Router()
-
-router
-    .post("/jobPost", adminJobPost)
-    .get('/getAlluser',getAllUsers)
-    
-module.exports = router    
+module.exports = router;

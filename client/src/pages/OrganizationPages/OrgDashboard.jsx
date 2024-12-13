@@ -29,7 +29,7 @@ console.log(user);
           <RequestTable />
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

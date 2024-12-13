@@ -4,18 +4,18 @@ import React from 'react';
 import { useReactToPrint } from 'react-to-print';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { useGetAllUserQuery } from '../../redux/api/adminApi';
 
 const ManageUsers = () => {
-  // Dummy data for users
-  const users = [
-    { id: 1, name: 'John Doe', email: 'john.doe@example.com', role: 'Admin' },
-    { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com', role: 'User' },
-    { id: 3, name: 'Tom Brown', email: 'tom.brown@example.com', role: 'User' },
-    { id: 4, name: 'Alice Johnson', email: 'alice.johnson@example.com', role: 'Admin' },
-  ];
-
+  // Fetch users dynamically using RTK Query
+  const { data:users, isLoading, isError } = useGetAllUserQuery();
+console.log(users);
   // Function to download data as Excel file
   const downloadExcel = () => {
+    if (!users || users.length === 0) {
+      alert('No user data available to download.');
+      return;
+    }
     const ws = XLSX.utils.json_to_sheet(users);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Users');
@@ -31,6 +31,15 @@ const ManageUsers = () => {
     documentTitle: 'Users Report',
     onAfterPrint: () => alert('Report downloaded as PDF'),
   });
+
+  // Handle loading and error states
+  if (isLoading) {
+    return <p>Loading users...</p>;
+  }
+
+  if (isError || !users) {
+    return <p>Error fetching users. Please try again later.</p>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-6">

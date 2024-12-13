@@ -7,8 +7,8 @@ import About from './pages/Shared/About'
 import UserNavbar from './Component/userComponent/UserNavbar'
 import Protected from './pages/Shared/Protected'
 import AdminDashboard from './pages/AdminPages/AdminDashboard'
-// import AdminJobPost from './pages/AdminPages/AdminJobPost'
-// import AdminJobReview from './pages/AdminPages/AdminJobReview'
+
+
 import {Toaster} from 'react-hot-toast'
 import AdminProtected from './share/AdminProtected'
 import AdminNavbar from './Component/adminComponent/AdminNavbar'
@@ -35,6 +35,10 @@ import ManageUsers from './pages/AdminPages/ManageUser'
 import AdminManageReports from './pages/AdminPages/AdminManageReports'
 import OrganizationManagement from './pages/AdminPages/ManageOrgnization'
 import PageNotFound from './share/PageNotFound'
+import OrganizationDetails from './pages/OrganizationPages/OrganizationDetails'
+import OrganizationPayment from './Component/Common/OrganizationPayment'
+import ThankYouPage from './Component/Common/ThankYouPage'
+import ProjectsWeHaveDone from './Component/Common/ProjectsWeHaveDone'
 
 const App = () => {
   return <>
@@ -58,10 +62,13 @@ const App = () => {
              {/* <Route path='/jobDetails/:jobId' element={<JobDetails />} /> */}
             <Route path='/help' element={<Help/>} />
             <Route path='/contactus' element={<ContactUs />} />
-            
+            <Route path="/organization-details" element={<OrganizationDetails />} />
+            <Route path="/organization-payment" element={<OrganizationPayment />} />
         <Route path='/about' element={<About />} />
           <Route path='/organizations' element={<Orgnizations />} />
-          
+          <Route path="/thank-you" element={<ThankYouPage />} />
+          {/* <Route path="/projects/:id" element={<Pro />} /> */}
+
             </Route>
               
           
@@ -85,8 +92,8 @@ const App = () => {
   <Route path='/admin/manage-reports' element={<AdminManageReports />} />
   <Route path='/admin/ManageOrganizations' element={<OrganizationManagement />} />
   
-  {/* Add the route for application detailing here */}
-  {/* <Route path="/admin/application-details" element={<ApplicationDetails />} /> */}
+
+  
 </Route>
         
             <Route path='*' element={ <PageNotFound /> } />

@@ -52,6 +52,7 @@ exports.login = asyncHandler(async (req,res) => {
     res.status(200).json({
         message: "Login Success",
         result: {
+            id:result._id,
             name: result.name,
             email: result.email,
             role:result.role,
@@ -67,7 +68,7 @@ exports.logout = asyncHandler(async (req, res) => {
 })
 
 exports.orgRegister = asyncHandler(async (req, res) => {
-  const { orgName, orgEmail, password, number, registrationNumber, address, city, description, orgType } = req.body;
+  const { orgName, orgEmail, password, number, registrationNumber, address, city, description, orgType,area } = req.body;
 
   // Input validation
   if (!orgName || !orgEmail || !password || !number || !registrationNumber || !address || !city || !description || !orgType) {
@@ -101,6 +102,7 @@ exports.orgRegister = asyncHandler(async (req, res) => {
     registrationNumber,
     address,
     city,
+    area,
     description,
     orgType,
     user: newUser._id,

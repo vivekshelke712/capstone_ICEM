@@ -6,6 +6,27 @@ export const orgAPI = createApi({
     tagTypes: ["tagName"],
     endpoints: (builder) => {
         return {
+            getAllRequest: builder.query({
+                query: () => {
+                    return {
+                        url: "/getAllRequest/:id",
+                        method: "GET"
+                    }
+                },
+                // transformResponse : data => data.result,
+                providesTags: ["tagName"]
+            }),
+            findOrganizationByEmail : builder.query({
+                query: () => {
+                    return {
+                        url: "/findOrganizationByEmail/:email",
+                        method: "GET"
+                    }
+                },
+                transformResponse : data => data.result,
+                providesTags: ["tagName"]
+            }),
+            
             getAllOrgnization: builder.query({
                 query: () => {
                     return {
@@ -31,4 +52,4 @@ export const orgAPI = createApi({
     }
 })
 
-export const { useGetAllOrgnizationQuery, useAddUserMutation} = orgAPI
+export const { useGetAllOrgnizationQuery, useGetAllRequestQuery ,useFindOrganizationByEmailQuery} = orgAPI

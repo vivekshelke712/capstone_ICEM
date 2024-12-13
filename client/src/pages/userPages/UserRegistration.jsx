@@ -4,6 +4,14 @@ import { toast } from "react-hot-toast";
 import { useRegisterMutation } from "../../redux/api/authApi";
 import { useOrgRegisterMutation } from "../../redux/api/orgAuthApi";
 
+const areaOptions = {
+  Pune: ["Shivaji Nagar", "Kothrud", "Baner"],
+  Mumbai: ["Andheri", "Bandra", "Dadar"],
+  Bangalore: ["Whitefield", "Indiranagar", "Koramangala"],
+  Delhi: ["Connaught Place", "Karol Bagh", "Saket"],
+  Chennai: ["T. Nagar", "Velachery", "Adyar"],
+};
+
 const UserRegistration = () => {
   const [role, setRole] = useState("user"); // Role selection state
   const navigate = useNavigate();
@@ -27,6 +35,7 @@ const UserRegistration = () => {
     registrationNumber: "",
     address: "",
     city: "",
+    area: "",
     description: "",
     orgType: "",
   });
@@ -65,7 +74,7 @@ const UserRegistration = () => {
 
     if (orgSuccess) {
       toast.success("Organization registered successfully!");
-      navigate("/orgLogin");
+      navigate("/userLogin");
     }
     if (orgError) {
       toast.error(orgErrorData?.message || "Organization registration failed!");
@@ -73,17 +82,17 @@ const UserRegistration = () => {
   }, [userSuccess, userError, userErrorData, orgSuccess, orgError, orgErrorData, navigate]);
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
-        <h2 className="text-2xl font-bold text-center mb-6">Registration</h2>
-
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="bg-white p-10 rounded-xl shadow-xl w-full max-w-2xl space-y-8">
+        <h2 className="text-3xl font-semibold text-center text-gray-800">Create an Account</h2>
+        
         {/* Role Selection */}
         <div className="mb-6">
-          <label className="block text-gray-700 font-medium mb-2">Register as:</label>
+          <label className="block text-lg font-medium text-gray-700">Register as:</label>
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 text-gray-800"
           >
             <option value="user">User</option>
             <option value="organization">Organization</option>
@@ -102,7 +111,7 @@ const UserRegistration = () => {
                   value={userData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-3 border rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   placeholder="Enter your name"
                 />
               </div>
@@ -114,10 +123,12 @@ const UserRegistration = () => {
                   value={userData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-3 border rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   placeholder="Enter your email"
                 />
               </div>
+              
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700">Mobile Number</label>
                 <input
@@ -126,7 +137,7 @@ const UserRegistration = () => {
                   value={userData.number}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-3 border rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   placeholder="Enter your mobile number"
                 />
               </div>
@@ -138,7 +149,7 @@ const UserRegistration = () => {
                   value={userData.password}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-3 border rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   placeholder="Enter your password"
                 />
               </div>
@@ -153,7 +164,7 @@ const UserRegistration = () => {
                   value={orgData.orgName}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-3 border rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   placeholder="Enter organization name"
                 />
               </div>
@@ -169,6 +180,7 @@ const UserRegistration = () => {
                   placeholder="Enter organization email"
                 />
               </div>
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700">Password</label>
                 <input
@@ -218,29 +230,6 @@ const UserRegistration = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">City</label>
-                <input
-                  type="text"
-                  name="city"
-                  value={orgData.city}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border rounded-lg"
-                  placeholder="Enter city"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Description</label>
-                <textarea
-                  name="description"
-                  value={orgData.description}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border rounded-lg"
-                  placeholder="Enter organization description"
-                />
-              </div>
-              <div>
                 <label className="block text-sm font-medium text-gray-700">Organization Type</label>
                 <select
                   name="orgType"
@@ -257,19 +246,68 @@ const UserRegistration = () => {
                   <option value="EducationalHelp">EducationalHelp</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Description</label>
+                <textarea
+                  name="description"
+                  value={orgData.description}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 border rounded-lg"
+                  placeholder="Enter organization description"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">City</label>
+                <select
+                  name="city"
+                  value={orgData.city}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setOrgData((prev) => ({ ...prev, area: "" })); // Reset area when city changes
+                  }}
+                  required
+                  className="w-full px-4 py-3 border rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                >
+                  <option value="" disabled>Select a city</option>
+                  {Object.keys(areaOptions).map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {orgData.city && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Area</label>
+                  <select
+                    name="area"
+                    value={orgData.area}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  >
+                    <option value="" disabled>Select an area</option>
+                    {areaOptions[orgData.city].map((area) => (
+                      <option key={area} value={area}>
+                        {area}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </>
           )}
-
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+            className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
           >
             Register
           </button>
         </form>
       </div>
     </div>
-  );
+  );  
 };
 
 export default UserRegistration;

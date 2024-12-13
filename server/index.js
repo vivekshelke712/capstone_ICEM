@@ -23,7 +23,8 @@ app.use(cors({
 app.use('/api/v1/auth',require('./routes/authroute'))
 app.use('/api/v1/org',require('./routes/organizationRoute'))
 app.use('/api/v1/help',require('./routes/HelpRequestRoute'))
-// app.use('/api/v1/user',require('./routes/userRoute'))
+app.use('/api/v1/admin',require('./routes/adminRoute'))
+
 // 404
 app.use("*", (req, res) => {
     res.status(404).json({message: "resource not found"})

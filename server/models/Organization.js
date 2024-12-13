@@ -1,5 +1,14 @@
 const mongoose = require("mongoose");
 
+// Static cities and their respective areas
+const staticCities = {
+  Pune: ["Shivaji Nagar", "Kothrud", "Baner"],
+  Mumbai: ["Andheri", "Bandra", "Dadar"],
+  Bangalore: ["Whitefield", "Indiranagar", "Koramangala"],
+  Delhi: ["Connaught Place", "Karol Bagh", "Saket"],
+  Chennai: ["T. Nagar", "Velachery", "Adyar"],
+};
+
 const orgSchema = new mongoose.Schema(
   {
     orgName: {
@@ -25,7 +34,20 @@ const orgSchema = new mongoose.Schema(
     },
     city: {
       type: String,
+      enum: Object.keys(staticCities), // Static city names
       required: true,
+    },
+    area: {
+      type: String,
+      required: function () {
+        return this.city in staticCities; // Area is required if the city exists in staticCities
+      },
+      validate: {
+        validator: function (value) {
+          return staticCities[this.city]?.includes(value);
+        },
+        message: "Invalid area for the selected city.",
+      },
     },
     description: {
       type: String,
@@ -38,7 +60,7 @@ const orgSchema = new mongoose.Schema(
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user", // Reference to the User model
+      ref: "user",
       required: true,
     },
   },

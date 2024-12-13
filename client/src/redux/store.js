@@ -5,12 +5,14 @@ import { adminApi } from "./api/adminApi";
 
 import { orgAPI } from "./api/orgAPI";
 import { orgAuthApi } from "./api/orgAuthApi";
+import { HelpApi } from "./api/helpApi";
 
 
 const reduxStore = configureStore({
     reducer: {
         [authApi.reducerPath]: authApi.reducer,
         [adminApi.reducerPath]: adminApi.reducer,
+        [HelpApi.reducerPath]: HelpApi.reducer,
         // [userApi.reducerPath]: userApi.reducer,
         [orgAPI.reducerPath]:orgAPI.reducer,
         [orgAuthApi.reducerPath]:orgAuthApi.reducer,
@@ -18,7 +20,7 @@ const reduxStore = configureStore({
         user:authSlice,
         org:authSlice
     },
-    middleware: def => [...def(),authApi.middleware,orgAuthApi.middleware,adminApi.middleware,orgAPI.middleware,]
+    middleware: def => [...def(),authApi.middleware,HelpApi.middleware,orgAuthApi.middleware,adminApi.middleware,orgAPI.middleware,]
 })
 
 export default reduxStore

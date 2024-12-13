@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import { useLogoutMutation } from "../redux/api/authApi";
 import { FaBars } from "react-icons/fa";
 import { toast } from "react-toastify";
+// import VibratingButton from "./userComponent/VibratingButton";
+// import PoppingButton from "./userComponent/PoppingButton";
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.user);
@@ -128,10 +130,9 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link to="/help" className="text-lg font-serif">
-              Help
-            </Link>
-          </li>
+  <Link to='/help' className="text-lg font-serif bg-black text-white"> Help</Link>
+</li>
+
           <li>
             <Link to="/organizations" className="text-lg font-serif">
               Organization
@@ -209,26 +210,9 @@ const Navbar = () => {
             </ul>
           </div>
         ) : (
-          <div className="dropdown dropdown-end">
-            <div tabIndex={0} role="button" className="btn m-1">
-              Login
-            </div>
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-            >
-              <Link to="/userLogin">
-                <li>
-                  <a>Login as User</a>
-                </li>
-              </Link>
-              <Link to="/orglogin">
-                <li>
-                  <a>Login as Organization</a>
-                </li>
-              </Link>
-            </ul>
-          </div>
+         <button className="btn ">
+          <Link to='userLogin'>Login</Link>
+         </button>
         )}
       </div>
     </div>
