@@ -97,15 +97,15 @@ const Navbar = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/org-Dash/projects" className="hover:text-indigo-300">
-                  Manage Tasks
+                <Link to="/org-Dash/History" className="hover:text-indigo-300">
+                  History
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link to="/org-Dash/ManageService" className="hover:text-indigo-300">
                   Manage Members
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link to="/org-Dash/reports" className="hover:text-indigo-300">
                   View Queries

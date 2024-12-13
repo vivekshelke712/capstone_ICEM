@@ -1,33 +1,28 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const ContactSlice = createApi({
-    reducerPath: "api",
-    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000" }),
-    tagTypes: ["tagName"],
-    endpoints: (builder) => {
-        return {
-            getUsers: builder.query({
-                query: () => {
-                    return {
-                        url: "/apiEndPoint",
-                        method: "GET"
-                    }
-                },
-                providesTags: ["tagName"]
+export const userApi = createApi({
+    reducerPath: "user",
+    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/v1/user" }),  // Updated to your backend API
+    tagTypes: ["user"],
+    endpoints: (builder) => ({
+        getUserRequests: builder.query({
+            query: (userId) => ({
+                url: `/requests/${userId}`, // This should match the backend route
+                method: "GET",
             }),
-            addUser: builder.mutation({
-                query: userData => {
-                    return {
-                        url: "/apiEndPoint",
-                        method: "POST",
-                        body: userData
-                    }
-                },
-                invalidatesTags: ["tagName"]
+            
+            transformResponse: (data) => data, // Transform response if needed
+            providesTags: ["user"],
+        }),
+        addUser: builder.mutation({
+            query: (userData) => ({
+                url: "/apiEndPoint",  // Adjust endpoint for user creation
+                method: "POST",
+                body: userData,
             }),
-        
-        }
-    }
-})
+            invalidatesTags: ["user"],  // You can adjust this tag based on needs
+        }),
+    }),
+});
 
-export const { useGetUsersQuery, useAddUserMutation} = ContactSlice
+export const { useGetUserRequestsQuery } = userApi;

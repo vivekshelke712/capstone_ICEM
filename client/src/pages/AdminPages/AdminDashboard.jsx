@@ -187,16 +187,8 @@ const AdminDashboard = () => {
       </div>
 
       {/* Manage Users Section */}
-      <div className="bg-white p-4 rounded-lg shadow mt-6">
-        <h2 className="text-xl font-semibold mb-4">Manage Users</h2>
-        <div className="grid grid-cols-2 gap-6">
-          {recentUsers.map((user, index) => (
-            <div key={index} className="p-4 bg-gray-50 rounded-lg shadow">
-              <h3 className="text-lg font-semibold">{user.name}</h3>
-              <p className="text-sm text-gray-600">{user.email}</p>
-            </div>
-          ))}
-        </div>
+      <div className="m-24">
+
       </div>
     </div>
   );

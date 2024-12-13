@@ -29,7 +29,7 @@ import OrganizationDashboard from './pages/OrganizationPages/OrgDashboard'
 import UserDashboard from './pages/userPages/UserDashboard'
 import { ToastContainer } from 'react-toastify'
 import OrgProjects from './pages/OrganizationPages/OrgProjects'
-import ManageService from './pages/OrganizationPages/ManageService'
+import ManageService from './pages/OrganizationPages/Histrory'
 import Reports from './pages/OrganizationPages/Reports'
 import ManageUsers from './pages/AdminPages/ManageUser'
 import AdminManageReports from './pages/AdminPages/AdminManageReports'
@@ -39,6 +39,10 @@ import OrganizationDetails from './pages/OrganizationPages/OrganizationDetails'
 import OrganizationPayment from './Component/Common/OrganizationPayment'
 import ThankYouPage from './Component/Common/ThankYouPage'
 import ProjectsWeHaveDone from './Component/Common/ProjectsWeHaveDone'
+import ViewUserProfile from './pages/OrganizationPages/ViewUserProfile'
+import Histrory from './pages/OrganizationPages/Histrory'
+// import GetDetails from './pages/OrganizationPages/GetDetails'
+import ViewUserRequests from './pages/userPages/ViewUserRequest'
 
 const App = () => {
   return <>
@@ -75,14 +79,19 @@ const App = () => {
           
         <Route path='/user' element={<> <UserProtected compo={<> <Outlet /> </>} /></>}>
           <Route index element={<UserDashboard />} />
+          <Route path="/user/view-requests" element={<ViewUserRequests />} />
+          <Route path="/user/view-requests" element={<ViewUserRequests />} />
         </Route>
 
         {/* Organization Routes */}
            <Route path='/org-Dash' element={<> <OrganizationProtected compo={<> <Outlet /> </>} /></>}>
           <Route index element={< OrganizationDashboard/>} />
           <Route path='/org-Dash/projects' element={< OrgProjects/>} />
-          <Route path='/org-Dash/ManageService' element={< ManageService/>} />
+          <Route path='/org-Dash/History' element={< Histrory/>} />
           <Route path='/org-Dash/reports' element={< Reports/>} />
+          <Route path='/org-Dash/reports' element={< Reports/>} />
+          {/* <Route path='/org-Dash/getDetails' element={< GetDetails/>} /> */}
+          <Route path='/org-Dash/viewUserProfile' element={< ViewUserProfile/>} />
         </Route>
 
         {/* Admin Routes */}

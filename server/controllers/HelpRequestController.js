@@ -15,6 +15,44 @@ module.exports.getHelpRequestByEmail = expressAsyncHandler(async (req, res) => {
   }
 });
 
+ // Assuming you have a Request model for your requests
+
+
+// Controller function to get request details by ID using async-handler
+exports.getRequestDetails = expressAsyncHandler(async (req, res) => {
+  const { requestId } = req.params;  // Get the requestId from the URL params
+
+  // Fetch the request details from the database
+  const request = await HelpRequest.findById({userId:requestId});
+
+  if (!request) {
+    return res.status(404).json({ message: 'Request not found' });
+  }
+
+  // Return the request details
+  return res.status(200).json(data);
+});
+
+
+
+module.exports.updateHelpRequestStatus = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { isApproved } = req.body;
+
+  const updatedRequest = await HelpRequest.findByIdAndUpdate(
+    id,
+    { isApproved },
+    { new: true }
+  );
+
+  if (!updatedRequest) {
+    res.status(404);
+    throw new Error('Request not found');
+  }
+
+  res.status(200).json({ message: 'Request updated successfully', data: updatedRequest });
+});
+
 // Controller to create and store a new help request
 module.exports.createHelpRequest = expressAsyncHandler(async (req, res) => {
   const { name, age, needType, contact, description, city, area, organization, latitude, longitude, userId, orgId, email } = req.body;

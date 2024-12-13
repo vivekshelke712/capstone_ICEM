@@ -10,12 +10,13 @@ const ProjectCard = ({ project }) => (
     <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4">
       <h3 className="text-white text-xl font-semibold mb-2">{project.title}</h3>
       <p className="text-gray-300 mb-4">{project.description}</p>
-      <Link
+      <p className="text-gray-300 mb-4">{project.location}</p>
+      {/* <Link
         to={`/projects/${project.id}`}
         className="self-start bg-white text-black px-4 py-2 rounded-lg font-semibold"
       >
         See more
-      </Link>
+      </Link> */}
     </div>
   </div>
 );

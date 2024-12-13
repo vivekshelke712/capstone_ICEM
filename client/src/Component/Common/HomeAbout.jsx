@@ -21,9 +21,7 @@ const HomeAbout = () => {
             oversight, we ensure every request reaches the right support network,
             empowering communities through efficient, responsive connections.
           </p>
-          <button className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
-            Learn More
-          </button>
+         
         </div>
 
         {/* Video/Media Section */}
@@ -50,20 +48,7 @@ const HomeAbout = () => {
       </div>
 
       {/* Supporters Section */}
-      <div className="supporters mt-12 text-center">
-        <p className="text-gray-500 uppercase text-sm mb-4">Our Supporting Partners</p>
-        <div className="flex justify-center gap-6">
-          {/* Placeholder logos, replace with actual logos of supporting organizations */}
-          {Array(6).fill().map((_, index) => (
-            <img
-              key={index}
-              src={IndiraLogo} // Replace with actual logo URLs of supporting organizations
-              alt={`Partner Logo ${index + 1}`}
-              className="w-20 h-10 opacity-50"
-            />
-          ))}
-        </div>
-      </div>
+      
     </div>
   </>
 }
