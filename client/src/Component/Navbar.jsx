@@ -120,26 +120,26 @@ const Navbar = () => {
       return (
         <>
           <li>
-            <Link to="/" className="text-lg font-serif">
+            <Link to="/" className=" text-lg">
               Home
             </Link>
           </li>
           <li>
-            <Link to="/about" className="text-lg font-serif">
+            <Link to="/about" className=" text-lg">
               About Us
             </Link>
           </li>
           <li>
-  <Link to='/help' className="text-lg font-serif bg-black text-white"> Help</Link>
+  <Link to='/help' className="  bg-black text-white text-lg"> Help</Link>
 </li>
 
           <li>
-            <Link to="/organizations" className="text-lg font-serif">
+            <Link to="/organizations" className="text-lg ">
               Organization
             </Link>
           </li>
           <li>
-            <Link to="/contactus" className="text-lg font-serif">
+            <Link to="/contactus" className=" text-lg">
               Contact Us
             </Link>
           </li>

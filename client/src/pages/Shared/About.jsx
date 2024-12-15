@@ -32,46 +32,7 @@ const About = () => {
         
       ];
     return <>
-        {/* <Navbar /> */}
-        
-        <div className="bg-gray-50 p-8">
-      {/* Header Section */}
-      <section className="text-center mb-10">
-        <p className="text-sm uppercase tracking-wider text-gray-500">Know About Us</p>
-        <h1 className="text-4xl font-bold text-gray-800 mt-2">We are a nonprofit team working worldwide</h1>
-        <p className="text-gray-600 mt-4 mx-auto max-w-2xl">
-          AidBridge is a platform dedicated to bridging the gap between those in need and organizations willing to help. With volunteers, NGOs, municipal bodies, and other supportive organizations, we work collaboratively to ensure aid reaches those who need it most.
-        </p>
-      </section>
-
-      {/* Video/Image Section */}
-      {/* <section className="relative">
-        <img src={team} alt="AidBridge Team" className=" h-96  rounded-lg shadow-lg"/>
-        <button className="absolute inset-0 flex items-center justify-center">
-          <div className="bg-white p-4 rounded-full shadow-lg">
-           
-          </div>
-        </button>
-      </section> */}
-
-      {/* Mission & Vision Section */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
-        {/* Mission */}
-        <div className="p-6 bg-white rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold text-gray-800">Our Mission</h2>
-          <p className="text-gray-600 mt-2">
-            Connecting individuals to vital resources and support. Our mission is to provide a platform where individuals and communities can connect with essential resources, from orphan homes to shelters, animal welfare organizations, and more.
-          </p>
-        </div>
-        {/* Vision */}
-        <div className="p-6 bg-white rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold text-gray-800">Our Vision</h2>
-          <p className="text-gray-600 mt-2">
-            A world where no one is left behind. Through our platform, we aim to reduce the gap between those in need and those willing to help, building stronger, more resilient communities.
-          </p>
-        </div>
-      </section>
-    </div>
+      
     (
     <div className="bg-gray-50 p-8">
       {/* Header Section */}

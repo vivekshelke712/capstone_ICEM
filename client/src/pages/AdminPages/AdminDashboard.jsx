@@ -1,6 +1,6 @@
 import React from "react";
 import { useGetAllOrgnizationQuery } from "../../redux/api/orgAPI";
-import { useGetAllUserQuery } from "../../redux/api/adminApi";
+import { useGetAllRequestAdminQuery, useGetAllUserQuery } from "../../redux/api/adminApi";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
@@ -12,39 +12,22 @@ const AdminDashboard = () => {
   const statistics = {
     requests: 45,
     pendingRequests: 10,
-    Donations:'100000000 INR'
+    Donations: '100000 INR'
   };
+
+  // Hardcoded statistics for requests
+  const pendingRequestCount = 10; // Hardcoded for Pending Requests
+  const completeRequestCount = 35; // Hardcoded for Complete Requests
 
   // Fetch users and organizations dynamically
   const { data: usersData, isLoading: isLoadingUsers, isError: isErrorUsers } = useGetAllUserQuery();
   const { data: organizationsData, isLoading: isLoadingOrgs, isError: isErrorOrgs } = useGetAllOrgnizationQuery();
+  const { data: requestData } = useGetAllRequestAdminQuery();
 
   // Extract dynamic data
-  const userCount = usersData?.length || 0;
+  const userCount = usersData?.filter(user => user.role === 'user').length || 0;
   const organizationCount = organizationsData?.length || 0;
   const recentUsers = usersData?.slice(0, 2) || [];
-
-  // Static pending requests and notifications
-  const pendingRequests = [
-    {
-      id: 201,
-      title: "School Supplies for Rural Area",
-      submittedBy: "John Doe",
-      date: "2024-11-30",
-    },
-    {
-      id: 202,
-      title: "Medical Assistance for Old Age Home",
-      submittedBy: "Jane Smith",
-      date: "2024-11-28",
-    },
-  ];
-
-  const notifications = [
-    "5 new requests have been submitted for review.",
-    "A new organization has registered: Helping Hands.",
-    "Scheduled maintenance on December 5th at 2 AM.",
-  ];
 
   // Pie chart data for user roles
   const userRoleData = {
@@ -112,15 +95,21 @@ const AdminDashboard = () => {
             <h2 className="text-xl font-semibold text-gray-800 capitalize">{key}</h2>
             <p className="text-3xl font-bold text-blue-500">{value}</p>
           </div>
+          
         ))}
+        
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Pending Requests */}
-        
-
-        {/* Notifications */}
-        
+      {/* Request Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        <div className="bg-white p-4 rounded-lg shadow text-center">
+          <h2 className="text-xl font-semibold text-gray-800">Pending Requests</h2>
+          <p className="text-3xl font-bold text-yellow-500">{pendingRequestCount}</p>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow text-center">
+          <h2 className="text-xl font-semibold text-gray-800">Complete Requests</h2>
+          <p className="text-3xl font-bold text-green-500">{completeRequestCount}</p>
+        </div>
       </div>
 
       {/* Pie Charts Section */}
@@ -184,11 +173,12 @@ const AdminDashboard = () => {
             }} 
           />
         </div>
+       
       </div>
 
       {/* Manage Users Section */}
       <div className="m-24">
-
+        {/* Add any additional sections if needed */}
       </div>
     </div>
   );

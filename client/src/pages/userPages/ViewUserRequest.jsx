@@ -1,97 +1,44 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useGetUserRequestsQuery } from '../../redux/api/userApi';
 
 const ViewUserRequest = () => {
-  const { user } = useSelector(state => state.user); // Access user from Redux store
+  const { user } = useSelector((state) => state.user); // Access user from Redux store
 
+  // Ensure user exists and has an id
   if (!user || !user.id) {
-    return <div>Loading user data...</div>; // Handle case where user.id is missing
+    return <div>Loading user data...</div>;
   }
 
-  console.log('User ID:', user.id); // Log the user ID to ensure it's available
-
-  // Static data for demonstration with 5 Indian user requests
-  const data = [
-    {
-      _id: '1',
-      name: 'Rajesh Kumar',
-      age: 35,
-      needType: 'Medical Assistance',
-      contact: '9876543210',
-      city: 'Delhi',
-      area: 'Connaught Place',
-      isApproved: true,
-    },
-    {
-      _id: '2',
-      name: 'Priya Sharma',
-      age: 28,
-      needType: 'Food Supplies',
-      contact: '9988776655',
-      city: 'Mumbai',
-      area: 'Andheri',
-      isApproved: false,
-    },
-    {
-      _id: '3',
-      name: 'Amit Verma',
-      age: 40,
-      needType: 'Shelter Assistance',
-      contact: '9123456789',
-      city: 'Bengaluru',
-      area: 'Koramangala',
-      isApproved: true,
-    },
-    {
-      _id: '4',
-      name: 'Sita Rani',
-      age: 32,
-      needType: 'Clothing',
-      contact: '9801234567',
-      city: 'Kolkata',
-      area: 'Howrah',
-      isApproved: false,
-    },
-    {
-      _id: '5',
-      name: 'Ravi Patel',
-      age: 45,
-      needType: 'Educational Assistance',
-      contact: '9432167890',
-      city: 'Chennai',
-      area: 'T Nagar',
-      isApproved: true,
-    },
-  ];
+  const userId = String(user.id); // Ensure userId is a string
+  const { data, isLoading, isError, error } = useGetUserRequestsQuery(userId); // API call to get user requests
 
   useEffect(() => {
     if (data) {
-      console.log('User Requests Data:', data); // Log the response data
+      console.log("Fetched user requests:", data);
     }
   }, [data]);
 
-  // Simulating loading state
-  const isLoading = false;
+  // Handle loading state
+  if (isLoading) return <div className="text-center p-4">Loading your requests...</div>;
 
-  // Simulating error state
-  const isError = false;
-  const error = { message: 'Failed to fetch data' };
-
-  if (isLoading) {
-    return <div>Loading...</div>; // Show loading state while data is being fetched
-  }
-
+  // Handle error state
   if (isError) {
-    return <div>Error: {error.message}</div>; // Show error message if there's an issue
+    return (
+      <div className="text-center p-4 text-red-500">
+        Error: {error?.data?.message || error?.message || "Something went wrong"}
+      </div>
+    );
   }
 
+  // Render the table if data is available
   return (
-    <div>
+    <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">User Requests</h1>
-      {data && data.length > 0 ? (
-        <table className="min-w-full border-collapse table-auto my-24">
-          <thead>
-            <tr className="bg-gray-200 text-gray-700">
+      {data && data.data.length > 0 ? (
+        <table className="min-w-full border-collapse table-auto my-6 bg-white shadow-md rounded-lg overflow-hidden">
+          <thead className="bg-gray-200 text-gray-700">
+            <tr>
               <th className="px-4 py-2 text-left">#</th>
               <th className="px-4 py-2 text-left">Name</th>
               <th className="px-4 py-2 text-left">Age</th>
@@ -103,7 +50,7 @@ const ViewUserRequest = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((request, index) => (
+            {data.data.map((request, index) => (
               <tr key={request._id} className="border-b hover:bg-gray-50">
                 <td className="px-4 py-2">{index + 1}</td>
                 <td className="px-4 py-2">{request.name}</td>
@@ -118,7 +65,7 @@ const ViewUserRequest = () => {
           </tbody>
         </table>
       ) : (
-        <div>No requests found.</div> // If no requests data
+        <div className="text-center p-4 text-gray-500">No requests found.</div> // If no requests data
       )}
     </div>
   );

@@ -1,9 +1,10 @@
+
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const userApi = createApi({
-    reducerPath: "user",
+    reducerPath: "userApi",
     baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/v1/user" }),  // Updated to your backend API
-    tagTypes: ["user"],
+    tagTypes: ["userApi"],
     endpoints: (builder) => ({
         getUserRequests: builder.query({
             query: (userId) => ({
@@ -12,7 +13,7 @@ export const userApi = createApi({
             }),
             
             transformResponse: (data) => data, // Transform response if needed
-            providesTags: ["user"],
+            providesTags: ["userApi"],
         }),
         addUser: builder.mutation({
             query: (userData) => ({

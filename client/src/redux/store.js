@@ -7,6 +7,7 @@ import { orgAPI } from "./api/orgAPI";
 import { orgAuthApi } from "./api/orgAuthApi";
 import { HelpApi } from "./api/helpApi";
 import { userApi } from "./api/userApi";
+// import { userApi } from "./api/userApi";
 
 
 const reduxStore = configureStore({
@@ -14,10 +15,10 @@ const reduxStore = configureStore({
         [authApi.reducerPath]: authApi.reducer,
         [adminApi.reducerPath]: adminApi.reducer,
         [HelpApi.reducerPath]: HelpApi.reducer,
-        [userApi.reducerPath]: userApi.reducer,
+        // [userApi.reducerPath]: userApi.reducer,
         [orgAPI.reducerPath]:orgAPI.reducer,
         [orgAuthApi.reducerPath]:orgAuthApi.reducer,
-        // [userApi.reducerPath]: userApi.reducer,
+        [userApi.reducerPath]: userApi.reducer,
         user:authSlice,
         org:authSlice
     },

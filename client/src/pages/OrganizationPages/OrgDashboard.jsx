@@ -35,12 +35,19 @@ const OrgaDashboard = () => {
   const handleStatusChange = (requestId, action) => {
     const status = action === 'accept' ? true : false;
 
-    // If accepted, handle the location update and map link
-    if (status) {
-      handleLocationRedirect(requestId);  // Call this function when accepting a request
-    } else {
-      updateRequest({ id: requestId, isApproved: status });
-    }
+    // Update the request status first
+    updateRequest({ id: requestId, isApproved: status })
+      .unwrap()  // Use unwrap to handle the response and errors
+      .then(() => {
+        // After the request is successfully updated, handle the location redirection
+        // if (status) {
+        //   handleLocationRedirect(requestId);
+        // }
+      })
+      .catch((error) => {
+        // Handle any errors during the update request
+        console.error("Error updating the request:", error);
+      });
   };
 
   // Function to generate Google Maps URL with user's location
@@ -125,6 +132,7 @@ const OrgaDashboard = () => {
                         <th className="border border-gray-300 px-4 py-2">Area</th>
                         <th className="border border-gray-300 px-4 py-2">Request Detail</th>
                         <th className="border border-gray-300 px-4 py-2">Actions</th>
+                        <th className="border border-gray-300 px-4 py-2">getLocation</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -137,13 +145,13 @@ const OrgaDashboard = () => {
                           <td className="border border-gray-300 px-4 py-2">{request.city}</td>
                           <td className="border border-gray-300 px-4 py-2">{request.area}</td>
                           <td className="bg-black-500 text-white px-4 py-2 rounded text-center">
-  <button
-    className="bg-black text-white px-4 py-2 rounded"
-    onClick={() => navigate('/org-Dash/getDetails', { state: { requestId: request._id } })} // Send requestId to the GetDetails page
-  >
-    Get Details
-  </button>
-</td>
+                            <button
+                              className="bg-black text-white px-4 py-2 rounded"
+                              onClick={() => navigate('/org-Dash/getDetails', { state: { requestId: request._id } })} // Send requestId to the GetDetails page
+                            >
+                              Get Details
+                            </button>
+                          </td>
                           <td className="border border-gray-300 px-4 py-2 mx-3 text-center">
                             <button
                               className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
@@ -153,6 +161,7 @@ const OrgaDashboard = () => {
                             </button>
                             {request.isApproved ? (
                               <>
+                               
                                 <button
                                   className="bg-green-500 text-white px-4 py-2 rounded cursor-not-allowed"
                                   disabled
@@ -160,14 +169,7 @@ const OrgaDashboard = () => {
                                   Accepted
                                 </button>
                                 {/* Display location icon when the request is accepted */}
-                                <a
-                                  href={`https://www.google.com/maps?q=${request.latitude},${request.longitude}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-black-500 p-4"
-                                >
-                                  <MdLocationOn className="inline mr-2" /> Location
-                                </a>
+                               
                               </>
                             ) : (
                               <>
@@ -177,10 +179,17 @@ const OrgaDashboard = () => {
                                 >
                                   Accept
                                 </button>
-                                {/* Optionally keep Reject button */}
                               </>
                             )}
                           </td>
+                          <td><a
+                                  href={`https://www.google.com/maps?q=${request.latitude},${request.longitude}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-black-500 p-4"
+                                >
+                                  <MdLocationOn className="inline mr-2" /> Location
+                                </a></td>
                         </tr>
                       ))}
                     </tbody>
@@ -193,7 +202,6 @@ const OrgaDashboard = () => {
           )}
         </div>
       </div>
-      {/* Optionally add a Footer component */}  
     </div>
   );
 };
