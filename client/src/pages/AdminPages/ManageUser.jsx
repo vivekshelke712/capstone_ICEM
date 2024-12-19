@@ -57,13 +57,7 @@ const ManageUsers = () => {
         >
           Download Excel
         </button>
-        {/* Uncomment if PDF download functionality is needed */}
-        {/* <button
-          onClick={handlePrint}
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg ml-4 hover:bg-blue-700 transition duration-300 transform hover:scale-105 shadow-lg"
-        >
-          Download PDF
-        </button> */}
+        
       </div>
 
       <div ref={componentRef} className="bg-white shadow-lg rounded-lg overflow-hidden">

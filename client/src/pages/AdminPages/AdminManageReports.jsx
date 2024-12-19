@@ -2,7 +2,7 @@ import React from 'react'
 
 const AdminManageReports = () => {
   return<>
-  This PAge will resolve Query
+  <button type="button" class="btn btn-primary btn-sm">Small button</button>
   </>
 }
 
